@@ -1,7 +1,14 @@
 #!/bin/sh
-set -e
+# set -e: Salir inmediatamente si un comando falla.
+# set -x: Imprimir cada comando en el log antes de ejecutarlo.
+set -ex
 
-echo "--- Iniciando PHP-FPM en segundo plano ---"
-php-fpm
+echo "--- Iniciando PHP-FPM en modo daemon ---"
+php-fpm -D
 
-echo "--- Fin del script de inicio (esto no debería pasar si FPM funciona bien) ---"
+echo "--- Verificando la configuración de Nginx ---"
+nginx -t
+
+echo "--- Iniciando Nginx en primer plano ---"
+# Usamos comillas simples para evitar cualquier problema de interpretación
+nginx -g 'daemon off;'
