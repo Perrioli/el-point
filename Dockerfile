@@ -1,20 +1,15 @@
 # ---- Etapa 1: Compilar los assets de Frontend ----
 FROM node:20-alpine AS node-builder
-
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
-# Este paso fallaba en el servidor, pero el Buildpack lo manejará.
-# Si el build local funciona, el Buildpack debería poder replicarlo.
 RUN npm run build
 
 # ---- Etapa 2: Instalar las dependencias de Backend ----
 FROM composer:2 AS php-builder
-
 WORKDIR /app
 COPY composer.json composer.lock ./
-# Pre-descargar dependencias
 RUN composer install --no-dev --no-interaction --no-scripts --no-progress --prefer-dist
 
 # ---- Etapa 3: Imagen Final de Producción ----
@@ -32,7 +27,7 @@ RUN docker-php-ext-install pdo pdo_mysql
 
 WORKDIR /var/www/html
 
-# Copiar los archivos de la aplicación y dependencias desde las etapas anteriores
+# Copiar los archivos de la aplicación y dependencias
 COPY --from=php-builder /app/vendor ./vendor
 COPY --from=node-builder /app/public ./public
 COPY . .
