@@ -1,15 +1,15 @@
 #!/bin/sh
-# Limpiar cualquier default.conf residual (por si Easypanel monta)
-rm -f /etc/nginx/conf.d/default.conf
+set -e
 
-# Iniciar PHP-FPM en background
-php-fpm &
+# Esperar un poco a que la DB esté lista (opcional)
+# sleep 5
 
-# Probar Nginx
-if ! nginx -t; then
-    echo "Error en config de Nginx. Saliendo..."
-    exit 1
-fi
+echo "🔧 Ejecutando migraciones y caches de Laravel..."
+php artisan migrate --force || true
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
-# Iniciar Nginx en foreground
-nginx -g "daemon off;"
+echo "🚀 Iniciando PHP-FPM y Nginx..."
+service nginx start
+php-fpm
