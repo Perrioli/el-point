@@ -30,7 +30,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Se elimina la configuración por defecto de Nginx
 RUN rm -f /etc/nginx/sites-enabled/default
 # Se copia nuestra configuración personalizada
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 # Se asegura que PHP-FPM escuche en el puerto 9000
 RUN sed -i 's|listen = .*|listen = 127.0.0.1:9000|' /usr/local/etc/php-fpm.d/www.conf
 
