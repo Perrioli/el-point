@@ -36,6 +36,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
     Route::resource('pedidos', PedidoController::class);
 
     Route::patch('pedidos/{pedido}/listo', [PedidoController::class, 'marcarComoListo'])->name('pedidos.listo');
+    Route::patch('pedidos/{pedido}/entregado', [App\Http\Controllers\Admin\PedidoController::class, 'marcarComoEntregado'])->name('pedidos.entregado');
+
 
     Route::post('caja', [CajaController::class, 'store'])->name('caja.store');
     Route::patch('caja/{caja}', [CajaController::class, 'update'])->name('caja.update');

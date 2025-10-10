@@ -28,6 +28,7 @@ const formatDate = (dateString) => {
 </script>
 
 <template>
+
     <Head title="Registros de Caja" />
 
     <AuthenticatedLayout>
@@ -44,7 +45,7 @@ const formatDate = (dateString) => {
                     </div>
                 </form>
             </div>
-            <div class="card-body p-0">
+            <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -52,7 +53,7 @@ const formatDate = (dateString) => {
                             <th>Fecha Apertura</th>
                             <th>Fecha Cierre</th>
                             <th>Total Vendido</th>
-                            <th>Acciones</th>
+                            <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -64,9 +65,9 @@ const formatDate = (dateString) => {
                             <td>{{ formatDate(registro.fecha_apertura) }}</td>
                             <td>{{ formatDate(registro.fecha_cierre) }}</td>
                             <td>${{ parseFloat(registro.pedidos_sum_precio_total || 0).toFixed(2) }}</td>
-                            <td>
+                            <td class="text-center">
                                 <Link :href="route('admin.registros.show', registro.id)" class="btn btn-sm btn-info">
-                                    Ver Detalles
+                                Ver Detalles
                                 </Link>
                             </td>
                         </tr>
@@ -74,7 +75,7 @@ const formatDate = (dateString) => {
                 </table>
             </div>
             <div class="card-footer">
-                 <Pagination :links="registros.links" />
+                <Pagination :links="registros.links" />
             </div>
         </div>
     </AuthenticatedLayout>

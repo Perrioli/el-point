@@ -14,6 +14,13 @@ const activeTab = ref('pendientes');
 const pedidosPendientes = computed(() => props.pedidos.filter(p => p.status === 'pendiente'));
 const pedidosListos = computed(() => props.pedidos.filter(p => p.status === 'listo'));
 const pedidosEntregados = computed(() => props.pedidos.filter(p => p.status === 'entregado'));
+
+const deletePedido = (id) => {
+    if (confirm('¿Estás seguro de que deseas cancelar este pedido?')) {
+        router.delete(route('admin.pedidos.destroy', id));
+    }
+};
+
 </script>
 
 <template>

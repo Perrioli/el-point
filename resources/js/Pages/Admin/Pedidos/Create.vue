@@ -1,12 +1,8 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref, computed } from 'vue'; // Importamos ref y computed
+import { ref, computed } from 'vue';
 
-// ----
-// PROPS
-// ----
-// Recibimos la lista de todos los productos disponibles desde el controlador
 const props = defineProps({
     productos: {
         type: Array,
@@ -14,37 +10,24 @@ const props = defineProps({
     }
 });
 
-// ----
-// ESTADO LOCAL (para el selector de productos)
-// ----
 const productoSeleccionadoId = ref(null);
 const cantidad = ref(1);
 
-// ----
-// FORMULARIO PRINCIPAL (lo que se enviará al backend)
-// ----
 const form = useForm({
     persona: '',
     comentarios: '',
     precio_total: 0,
-    productos_pedido: [], // Array que contendrá los productos de este pedido
+    productos_pedido: [],
 });
 
-// ----
-// LÓGICA DEL FORMULARIO
-// ----
-// Función para añadir el producto seleccionado a la lista del pedido
 const agregarProducto = () => {
-    // Validaciones básicas
     if (!productoSeleccionadoId.value || cantidad.value <= 0) {
         alert('Por favor, selecciona un producto y una cantidad válida.');
         return;
     }
 
-    // Buscamos el producto completo en nuestra lista de props
     const productoAgregado = props.productos.find(p => p.id_producto === productoSeleccionadoId.value);
     
-    // Añadimos el producto al array del formulario
     form.productos_pedido.push({
         producto_id: productoAgregado.id_producto,
         nombre: productoAgregado.nombre,
@@ -52,24 +35,20 @@ const agregarProducto = () => {
         precio_unitario: productoAgregado.precio,
     });
 
-    // Reseteamos los campos del selector
     productoSeleccionadoId.value = null;
     cantidad.value = 1;
 };
 
-// Función para quitar un producto de la lista
 const quitarProducto = (index) => {
     form.productos_pedido.splice(index, 1);
 };
 
-// Propiedad computada para calcular el total automáticamente
 const totalPedido = computed(() => {
     let total = form.productos_pedido.reduce((sum, item) => sum + (item.cantidad * item.precio_unitario), 0);
-    form.precio_total = total; // Actualizamos el precio_total del formulario
+    form.precio_total = total;
     return total;
 });
 
-// Función para enviar el formulario completo
 const submit = () => {
     if (form.productos_pedido.length === 0) {
         alert('Debes añadir al menos un producto al pedido.');
