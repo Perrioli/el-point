@@ -6,19 +6,18 @@ ARG VITE_APP_NAME
 ARG ASSET_URL
 ENV VITE_APP_NAME=$VITE_APP_NAME
 ENV ASSET_URL=$ASSET_URL
-# Agrega más si las usas, e.g., ARG APP_NAME; ENV APP_NAME=$APP_NAME (para fallback)
 
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci --only=production  # <- MEJOR: Usa 'ci' para lockfile estricto y solo prod si es posible
+RUN npm ci  # Sin --only=production por ahora, para asegurar que dev deps (como vite) se instalen
 
-# Copia solo lo necesario para build (evita copiar todo al inicio para cache)
-COPY resources/ ./resources/  # <- AGREGADO: Copia explícitamente resources para assets
-COPY vite.config.js tailwind.config.js ./.  # <- AGREGADO: Copia configs de Vite/Tailwind si existen
-COPY . .
-
-# Opcional: Si usas paquetes nativos, instala dependencias del sistema
-# RUN apk add --no-cache python3 make g++  # Descomenta si npm install falla por compilación (e.g., canvas, sharp)
+# Copia explícita y segura: Solo si existen, para evitar paths inválidos
+COPY resources/ ./resources/  # Assets JS/CSS
+# Copia configs solo si existen (Docker ignora si no, pero para cache, usa múltiples líneas)
+COPY vite.config.js ./vite.config.js || true  # <- AGREGADO: || true ignora error si no existe
+COPY tailwind.config.js ./tailwind.config.js || true
+COPY postcss.config.js ./postcss.config.js || true  # Si usas PostCSS
+COPY . .  # Copia el resto (esto sobrescribe si es necesario)
 
 RUN npm run build
 
@@ -44,12 +43,12 @@ WORKDIR /var/www/html
 
 # Copiar los archivos de la aplicación y dependencias
 COPY --from=php-builder /app/vendor ./vendor
-COPY --from=node-builder /app/public ./public  # Assets compilados van aquí
+COPY --from=node-builder /app/public ./public
 
-# Copia el resto (después de assets para cache)
+# Copia el resto (después de assets para mejor cache)
 COPY . .
 
-# Copiar archivos de configuración del servidor
+# Copiar archivos de configuración del servidor (sobrescribe si hay conflictos)
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
