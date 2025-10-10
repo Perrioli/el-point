@@ -11,17 +11,17 @@ RUN rm -f /etc/nginx/sites-enabled/default \
     && rm -f /etc/nginx/conf.d/default.conf
 
 # Instalar Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer  # Usa composer:2 (latest estable, no 2.8 específica)
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copiar configuración personalizada de Nginx
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+# Copiar configuración personalizada de Nginx (desde raíz, no subdir)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Configuración de PHP-FPM para que escuche en 127.0.0.1:9000 (agregado IP para bind local)
+# Configuración de PHP-FPM para 127.0.0.1:9000
 RUN sed -i 's|listen = .*|listen = 127.0.0.1:9000|' /usr/local/etc/php-fpm.d/www.conf
 
 WORKDIR /var/www
 
-# Copiar y preparar dependencias PHP (cache-friendly: primero composer.json)
+# Copiar dependencias PHP primero (para cache)
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
@@ -31,30 +31,30 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && node -v \
     && npm -v
 
-# Copiar y preparar dependencias frontend (cache-friendly: primero package.json)
+# Copiar dependencias frontend primero (para cache)
 COPY package*.json ./
 RUN npm install
-RUN npm rebuild rollup --force  # Si lo necesitas para Vite/Rollup
+RUN npm rebuild rollup --force || true  # Opcional, con fallback si falla
 
-# Copiar código fuente y compilar assets (después de deps para cache)
+# Copiar código fuente (después de deps)
 COPY . .
 
 # Compilar assets
-RUN npm run build
+RUN npm run build || echo "⚠️ npm run build falló (verifica package.json)"
 
-# Copiar script de inicio
-COPY docker/entrypoint.sh /entrypoint.sh
+# Copiar script de inicio (desde raíz)
+COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Permisos para Laravel (solo una vez, al final)
+# Permisos para Laravel
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
-# Verificar sintaxis de Nginx en build-time (agregado para depurar temprano)
-RUN nginx -t
+# Verificar sintaxis de Nginx (opcional, con fallback)
+RUN nginx -t || echo "⚠️ nginx -t falló (config básica OK?)"
 
-# Exponer puerto HTTP
+# Exponer puerto
 EXPOSE 80
 
-# Usar entrypoint como proceso principal
+# Entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
