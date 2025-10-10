@@ -1,5 +1,7 @@
 FROM php:8.3-fpm
 
+RUN addgroup -S www-data && adduser -S -D -G www-data www-data
+
 # Instalar dependencias del sistema y PHP
 RUN apt-get update && apt-get install -y \
     git unzip curl libpng-dev libonig-dev libxml2-dev libzip-dev libgmp-dev libicu-dev nginx \
