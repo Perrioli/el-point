@@ -18,9 +18,8 @@ FROM php:8.2-fpm-alpine
 # Instalar dependencias del sistema y Nginx
 RUN apk update && apk add --no-cache nginx
 
-# --- LA CORRECCIÓN PARA EL ERROR DE NGINX ---
-# Eliminar la configuración por defecto de Nginx que causa conflictos
-RUN rm /etc/nginx/conf.d/default.conf
+# Eliminar la configuración por defecto de Nginx que causa conflictos (mantenlo aquí)
+RUN rm -f /etc/nginx/conf.d/default.conf
 
 # Instalar extensiones de PHP para Laravel
 RUN docker-php-ext-install pdo pdo_mysql
@@ -30,12 +29,17 @@ WORKDIR /var/www/html
 # Copiar los archivos de la aplicación y dependencias
 COPY --from=php-builder /app/vendor ./vendor
 COPY --from=node-builder /app/public ./public
+
+# Copia solo lo necesario para prod (evita .git, src, etc. si es posible; usa .dockerignore)
 COPY . .
 
-# Copiar archivos de configuración del servidor
+# Copiar archivos de configuración del servidor (después de COPY . . para sobrescribir si hay conflictos)
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# Verificar sintaxis de Nginx en build time (opcional, para depurar)
+RUN nginx -t
 
 # Ajustar permisos para Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
