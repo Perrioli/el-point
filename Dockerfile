@@ -53,6 +53,13 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
 # Verificar sintaxis de Nginx (opcional, con fallback)
 RUN nginx -t || echo "⚠️ nginx -t falló (config básica OK?)"
 
+RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache storage/logs
+RUN mkdir -p bootstrap/cache
+
+# 2. Mover los comandos de permisos aquí, que es el lugar correcto
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
 # Exponer puerto
 EXPOSE 80
 
