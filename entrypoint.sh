@@ -17,6 +17,9 @@ rm -f /etc/nginx/sites-enabled/default
 
 echo "🚀 Iniciando PHP-FPM y Nginx..."
 
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
 # Iniciar PHP-FPM en background
 php-fpm -D
 
