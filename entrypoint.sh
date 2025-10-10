@@ -31,4 +31,3 @@ if ! nginx -t; then
 fi
 
 echo "✅ Nginx y PHP-FPM iniciados."
-exec nginx -g "daemon off;"
