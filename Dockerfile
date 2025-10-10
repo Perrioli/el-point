@@ -1,69 +1,67 @@
+# Usar imagen base de PHP 8.3 con FPM (basada en Debian)
 FROM php:8.3-fpm
 
-RUN addgroup -S www-data && adduser -S -D -G www-data www-data
-
-# Instalar dependencias del sistema y PHP
+# 1. INSTALAR DEPENDENCIAS DEL SISTEMA Y EXTENSIONES DE PHP
+# Se agrupan todas las instalaciones en una sola capa para optimizar
 RUN apt-get update && apt-get install -y \
-    git unzip curl libpng-dev libonig-dev libxml2-dev libzip-dev libgmp-dev libicu-dev nginx \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip gmp intl \
-    && rm -rf /var/lib/apt/lists/*
+    git \
+    unzip \
+    curl \
+    nginx \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    libgmp-dev \
+    libicu-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip gmp intl
 
-# Eliminar la configuración por defecto de Nginx
-RUN rm -f /etc/nginx/sites-enabled/default \
-    && rm -f /etc/nginx/conf.d/default.conf
+# 2. INSTALAR NODE.JS Y NPM
+# Se instala la versión 20 de Node.js
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
 
-# Instalar Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# 3. INSTALAR COMPOSER
+# Se copia Composer globalmente desde su imagen oficial
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copiar configuración personalizada de Nginx (desde raíz, no subdir)
+# 4. CONFIGURAR NGINX Y PHP-FPM
+# Se elimina la configuración por defecto de Nginx
+RUN rm -f /etc/nginx/sites-enabled/default
+# Se copia nuestra configuración personalizada
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Configuración de PHP-FPM para 127.0.0.1:9000
+# Se asegura que PHP-FPM escuche en el puerto 9000
 RUN sed -i 's|listen = .*|listen = 127.0.0.1:9000|' /usr/local/etc/php-fpm.d/www.conf
 
+# 5. ESTABLECER DIRECTORIO DE TRABAJO
 WORKDIR /var/www
 
-# Copiar dependencias PHP primero (para cache)
+# 6. INSTALAR DEPENDENCIAS DE PHP (Cacheable)
+# Copiamos solo los archivos de dependencias para aprovechar el caché de Docker
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Instalar Node.js y npm
-RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs \
-    && node -v \
-    && npm -v
-
-# Copiar dependencias frontend primero (para cache)
+# 7. INSTALAR DEPENDENCIAS DE JAVASCRIPT (Cacheable)
 COPY package*.json ./
 RUN npm install
-RUN npm rebuild rollup --force || true  # Opcional, con fallback si falla
 
-# Copiar código fuente (después de deps)
+# 8. COPIAR TODO EL CÓDIGO DE LA APLICACIÓN
 COPY . .
 
-# Compilar assets
-RUN npm run build || echo "⚠️ npm run build falló (verifica package.json)"
+# 9. COMPILAR ASSETS DE FRONTEND
+# Se ejecuta después de copiar todo el código
+RUN npm run build
 
-# Copiar script de inicio (desde raíz)
+# 10. CREAR CARPETAS Y ESTABLECER PERMISOS
+# Se crean las carpetas que Laravel necesita para escribir
+RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache storage/logs bootstrap/cache
+# Se establecen los permisos una sola vez, al final, sobre las carpetas ya creadas
+RUN chown -R www-data:www-data storage bootstrap/cache
+RUN chmod -R 775 storage bootstrap/cache
+
+# 11. EXPONER PUERTO Y EJECUTAR SCRIPT DE INICIO
+EXPOSE 80
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
-
-# Permisos para Laravel
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
-
-# Verificar sintaxis de Nginx (opcional, con fallback)
-RUN nginx -t || echo "⚠️ nginx -t falló (config básica OK?)"
-
-RUN mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache storage/logs
-RUN mkdir -p bootstrap/cache
-
-# 2. Mover los comandos de permisos aquí, que es el lugar correcto
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Exponer puerto
-EXPOSE 80
-
-# Entrypoint
 ENTRYPOINT ["/entrypoint.sh"]
