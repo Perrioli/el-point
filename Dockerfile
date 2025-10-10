@@ -1,65 +1,62 @@
-# ---- Etapa 1: Compilar los assets de Frontend ----
-FROM node:20-alpine AS node-builder
+FROM php:8.3-fpm
 
-# Recibir build-args de Easypanel y setear como ENV para Vite/npm
-ARG VITE_APP_NAME
-ARG ASSET_URL
-ENV VITE_APP_NAME=$VITE_APP_NAME
-ENV ASSET_URL=$ASSET_URL
+# Instalar dependencias del sistema y PHP
+RUN apt-get update && apt-get install -y \
+    git unzip curl libpng-dev libonig-dev libxml2-dev libzip-dev libgmp-dev libicu-dev nginx \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip gmp intl \
+    && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci  # Sin --only=production por ahora, para asegurar que dev deps (como vite) se instalen
 
-# Copia explícita y segura: Solo si existen, para evitar paths inválidos
-COPY resources/ ./resources/  # Assets JS/CSS
-# Copia configs solo si existen (Docker ignora si no, pero para cache, usa múltiples líneas)
-COPY vite.config.js ./vite.config.js || true  # <- AGREGADO: || true ignora error si no existe
-COPY tailwind.config.js ./tailwind.config.js || true
-COPY postcss.config.js ./postcss.config.js || true  # Si usas PostCSS
-COPY . .  # Copia el resto (esto sobrescribe si es necesario)
 
-RUN npm run build
+# Eliminar la configuración por defecto de Nginx
+RUN rm -f /etc/nginx/sites-enabled/default \
+    && rm -f /etc/nginx/conf.d/default.conf
 
-# ---- Etapa 2: Instalar las dependencias de Backend ----
-FROM composer:2 AS php-builder
-WORKDIR /app
+# Instalar Composer
+COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
+
+# Copiar configuración personalizada de Nginx (pisará la default)
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Configuración de PHP-FPM para que escuche en localhost:9000
+RUN sed -i 's/listen = .*/listen = 9000/' /usr/local/etc/php-fpm.d/www.conf
+
+WORKDIR /var/www
+
+# Copiar y preparar dependencias de Laravel
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --no-scripts --no-progress --prefer-dist
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# ---- Etapa 3: Imagen Final de Producción ----
-FROM php:8.2-fpm-alpine
-
-# Instalar dependencias del sistema y Nginx
-RUN apk update && apk add --no-cache nginx
-
-# Eliminar la configuración por defecto de Nginx que causa conflictos
-RUN rm -f /etc/nginx/conf.d/default.conf
-
-# Instalar extensiones de PHP para Laravel
-RUN docker-php-ext-install pdo pdo_mysql
-
-WORKDIR /var/www/html
-
-# Copiar los archivos de la aplicación y dependencias
-COPY --from=php-builder /app/vendor ./vendor
-COPY --from=node-builder /app/public ./public
-
-# Copia el resto (después de assets para mejor cache)
+# Copiar todo el código del proyecto
 COPY . .
 
-# Copiar archivos de configuración del servidor (sobrescribe si hay conflictos)
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Permisos para Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Verificar sintaxis de Nginx en build time
-RUN nginx -t
-
-# Ajustar permisos para Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
-
+# Exponer puerto HTTP
 EXPOSE 80
 
+# Instalar Node.js (LTS) y npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && node -v \
+    && npm -v
+
+# Instalar dependencias de frontend y compilar assets
+WORKDIR /var/www
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm rebuild rollup --force
+RUN npm run build
+
+# Copiar script de inicio
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Permisos de Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
+# Usar entrypoint como proceso principal
 ENTRYPOINT ["/entrypoint.sh"]
