@@ -65,12 +65,19 @@ class PedidoController extends Controller
             'numero_caja' => $nuevoNumeroCaja,
         ]);
 
+        $productosParaSincronizar = [];
         foreach ($validated['productos_pedido'] as $productoData) {
-            $pedido->productos()->attach($productoData['producto_id'], [
-                'cantidad' => $productoData['cantidad'],
-                'precio_unitario' => $productoData['precio_unitario'],
-            ]);
+            $productoId = $productoData['producto_id'];
+            if (isset($productosParaSincronizar[$productoId])) {
+                $productosParaSincronizar[$productoId]['cantidad'] += $productoData['cantidad'];
+            } else {
+                $productosParaSincronizar[$productoId] = [
+                    'cantidad' => $productoData['cantidad'],
+                    'precio_unitario' => $productoData['precio_unitario'],
+                ];
+            }
         }
+        $pedido->productos()->sync($productosParaSincronizar);
 
         return redirect()->route('admin.pedidos.index')->with('success', 'Pedido registrado exitosamente.');
     }
@@ -105,6 +112,8 @@ class PedidoController extends Controller
             'productos_pedido' => 'required|array|min:1',
             'productos_pedido.*.producto_id' => 'required|exists:productos,id_producto',
             'productos_pedido.*.cantidad' => 'required|integer|min:1',
+            'productos_pedido.*.precio_unitario' => 'required|numeric|min:0',
+
         ]);
 
         $pedido->update([
@@ -115,10 +124,15 @@ class PedidoController extends Controller
 
         $productosParaSincronizar = [];
         foreach ($validated['productos_pedido'] as $productoData) {
-            $productosParaSincronizar[$productoData['producto_id']] = [
-                'cantidad' => $productoData['cantidad'],
-                'precio_unitario' => $productoData['precio_unitario'],
-            ];
+            $productoId = $productoData['producto_id'];
+            if (isset($productosParaSincronizar[$productoId])) {
+                $productosParaSincronizar[$productoId]['cantidad'] += $productoData['cantidad'];
+            } else {
+                $productosParaSincronizar[$productoId] = [
+                    'cantidad' => $productoData['cantidad'],
+                    'precio_unitario' => $productoData['precio_unitario'],
+                ];
+            }
         }
         $pedido->productos()->sync($productosParaSincronizar);
 

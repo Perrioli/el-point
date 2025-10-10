@@ -67,7 +67,8 @@ const deletePedido = (id) => {
                 <div v-if="activeTab === 'pendientes'">
                     <p v-if="pedidosPendientes.length === 0" class="text-center text-muted">No hay pedidos pendientes.
                     </p>
-                    <PedidoCard v-for="pedido in pedidosPendientes" :key="pedido.id_pedido" :pedido="pedido" />
+                    <PedidoCard v-for="pedido in pedidosPendientes" :key="pedido.id_pedido" :pedido="pedido"
+                        @delete-pedido="deletePedido" />
                 </div>
 
                 <div v-if="activeTab === 'listos'">

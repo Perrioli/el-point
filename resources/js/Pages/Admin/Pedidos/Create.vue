@@ -26,14 +26,19 @@ const agregarProducto = () => {
         return;
     }
 
-    const productoAgregado = props.productos.find(p => p.id_producto === productoSeleccionadoId.value);
-    
-    form.productos_pedido.push({
-        producto_id: productoAgregado.id_producto,
-        nombre: productoAgregado.nombre,
-        cantidad: cantidad.value,
-        precio_unitario: productoAgregado.precio,
-    });
+    const productoExistente = form.productos_pedido.find(p => p.producto_id === productoSeleccionadoId.value);
+
+    if (productoExistente) {
+        productoExistente.cantidad += cantidad.value;
+    } else {
+        const productoAgregado = props.productos.find(p => p.id_producto === productoSeleccionadoId.value);
+        form.productos_pedido.push({
+            producto_id: productoAgregado.id_producto,
+            nombre: productoAgregado.nombre,
+            cantidad: cantidad.value,
+            precio_unitario: productoAgregado.precio,
+        });
+    }
 
     productoSeleccionadoId.value = null;
     cantidad.value = 1;
@@ -59,13 +64,16 @@ const submit = () => {
 </script>
 
 <template>
+
     <Head title="Registrar Pedido" />
     <AuthenticatedLayout>
         <template #header>Registrar Nuevo Pedido</template>
 
         <form @submit.prevent="submit">
             <div class="card">
-                <div class="card-header"><h3 class="card-title">Datos del Pedido</h3></div>
+                <div class="card-header">
+                    <h3 class="card-title">Datos del Pedido</h3>
+                </div>
                 <div class="card-body">
                     <div class="form-group">
                         <label for="persona">Nombre del Cliente</label>
@@ -79,13 +87,16 @@ const submit = () => {
             </div>
 
             <div class="card">
-                <div class="card-header"><h3 class="card-title">Añadir Productos</h3></div>
+                <div class="card-header">
+                    <h3 class="card-title">Añadir Productos</h3>
+                </div>
                 <div class="card-body row align-items-end">
                     <div class="col-md-6 form-group">
                         <label>Producto</label>
                         <select v-model="productoSeleccionadoId" class="form-control">
                             <option :value="null" disabled>-- Selecciona un producto --</option>
-                            <option v-for="producto in productos" :key="producto.id_producto" :value="producto.id_producto">
+                            <option v-for="producto in productos" :key="producto.id_producto"
+                                :value="producto.id_producto">
                                 {{ producto.nombre }} - ${{ producto.precio }}
                             </option>
                         </select>
@@ -101,7 +112,9 @@ const submit = () => {
             </div>
 
             <div class="card">
-                <div class="card-header"><h3 class="card-title">Resumen del Pedido</h3></div>
+                <div class="card-header">
+                    <h3 class="card-title">Resumen del Pedido</h3>
+                </div>
                 <div class="card-body p-0">
                     <table class="table">
                         <thead>
@@ -114,13 +127,16 @@ const submit = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-if="form.productos_pedido.length === 0"><td colspan="5" class="text-center">Añade productos al pedido.</td></tr>
+                            <tr v-if="form.productos_pedido.length === 0">
+                                <td colspan="5" class="text-center">Añade productos al pedido.</td>
+                            </tr>
                             <tr v-for="(item, index) in form.productos_pedido" :key="index">
                                 <td>{{ item.nombre }}</td>
                                 <td>{{ item.cantidad }}</td>
                                 <td>${{ item.precio_unitario }}</td>
                                 <td>${{ (item.cantidad * item.precio_unitario).toFixed(2) }}</td>
-                                <td><button type="button" @click="quitarProducto(index)" class="btn btn-sm btn-danger">Quitar</button></td>
+                                <td><button type="button" @click="quitarProducto(index)"
+                                        class="btn btn-sm btn-danger">Quitar</button></td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -131,7 +147,7 @@ const submit = () => {
                         </tfoot>
                     </table>
                 </div>
-                 <div class="card-footer text-right">
+                <div class="card-footer text-right">
                     <button type="submit" class="btn btn-primary" :disabled="form.processing">Guardar Pedido</button>
                 </div>
             </div>
