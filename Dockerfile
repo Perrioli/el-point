@@ -1,59 +1,62 @@
 FROM php:8.3-fpm
 
-# Instalar dependencias del sistema (Debian-based)
+# Instalar dependencias del sistema y PHP
 RUN apt-get update && apt-get install -y \
     git unzip curl libpng-dev libonig-dev libxml2-dev libzip-dev libgmp-dev libicu-dev nginx \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip gmp intl \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*  # Limpieza para reducir tamaño
+    && rm -rf /var/lib/apt/lists/*
 
-# Eliminar configuraciones por defecto de Nginx (evita conflictos con Easypanel)
+
+
+# Eliminar la configuración por defecto de Nginx
 RUN rm -f /etc/nginx/sites-enabled/default \
     && rm -f /etc/nginx/conf.d/default.conf
 
 # Instalar Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer  # Usa composer:2 (no 2.8, para latest estable)
+COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
 
-# Copiar configuración personalizada de Nginx (sobrescribe default)
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf  # Asume que nginx.conf está en /docker/ en tu proyecto
+# Copiar configuración personalizada de Nginx (pisará la default)
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Configuración de PHP-FPM para TCP (coincide con nginx.conf)
-RUN sed -i 's/listen = .*/listen = 127.0.0.1:9000/' /usr/local/etc/php-fpm.d/www.conf
+# Configuración de PHP-FPM para que escuche en localhost:9000
+RUN sed -i 's/listen = .*/listen = 9000/' /usr/local/etc/php-fpm.d/www.conf
 
 WORKDIR /var/www
 
-# Copiar y instalar dependencias PHP (cache-friendly)
+# Copiar y preparar dependencias de Laravel
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
 
-# Instalar Node.js temporalmente para build de assets (multi-stage ligera)
-# Usamos una stage temporal para Node, pero instalamos en la main para simplicidad
+# Copiar todo el código del proyecto
+COPY . .
+
+# Permisos para Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache
+
+# Exponer puerto HTTP
+EXPOSE 80
+
+# Instalar Node.js (LTS) y npm
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
-    && npm install -g npm@latest  # Actualiza npm si es necesario
+    && node -v \
+    && npm -v
 
-# Copiar y instalar dependencias frontend (cache-friendly)
+# Instalar dependencias de frontend y compilar assets
+WORKDIR /var/www
 COPY package*.json ./
-RUN npm ci --only=production  # Usa 'ci' para lockfile estricto; --only=production si no necesitas dev para build
-
-# Copiar código fuente y compilar assets
+RUN npm install
 COPY . .
-RUN npm run build  # Si falla, agrega 'npm rebuild rollup --force' antes si es necesario
-# Opcional: Remover Node post-build para reducir tamaño (pero requiere purge)
-# RUN apt-get purge -y nodejs npm && apt-get autoremove -y
+RUN npm rebuild rollup --force
+RUN npm run build
 
 # Copiar script de inicio
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Ajustar permisos para Laravel (solo una vez)
+# Permisos de Laravel
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
-
-# Verificar sintaxis de Nginx en build-time (para depurar temprano)
-RUN nginx -t
-
-# Exponer puerto HTTP
-EXPOSE 80
 
 # Usar entrypoint como proceso principal
 ENTRYPOINT ["/entrypoint.sh"]
