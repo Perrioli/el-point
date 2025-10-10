@@ -1,9 +1,25 @@
 # ---- Etapa 1: Compilar los assets de Frontend ----
 FROM node:20-alpine AS node-builder
+
+# Recibir build-args de Easypanel y setear como ENV para Vite/npm
+ARG VITE_APP_NAME
+ARG ASSET_URL
+ENV VITE_APP_NAME=$VITE_APP_NAME
+ENV ASSET_URL=$ASSET_URL
+# Agrega más si las usas, e.g., ARG APP_NAME; ENV APP_NAME=$APP_NAME (para fallback)
+
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci --only=production  # <- MEJOR: Usa 'ci' para lockfile estricto y solo prod si es posible
+
+# Copia solo lo necesario para build (evita copiar todo al inicio para cache)
+COPY resources/ ./resources/  # <- AGREGADO: Copia explícitamente resources para assets
+COPY vite.config.js tailwind.config.js ./.  # <- AGREGADO: Copia configs de Vite/Tailwind si existen
 COPY . .
+
+# Opcional: Si usas paquetes nativos, instala dependencias del sistema
+# RUN apk add --no-cache python3 make g++  # Descomenta si npm install falla por compilación (e.g., canvas, sharp)
+
 RUN npm run build
 
 # ---- Etapa 2: Instalar las dependencias de Backend ----
@@ -18,7 +34,7 @@ FROM php:8.2-fpm-alpine
 # Instalar dependencias del sistema y Nginx
 RUN apk update && apk add --no-cache nginx
 
-# Eliminar la configuración por defecto de Nginx que causa conflictos (mantenlo aquí)
+# Eliminar la configuración por defecto de Nginx que causa conflictos
 RUN rm -f /etc/nginx/conf.d/default.conf
 
 # Instalar extensiones de PHP para Laravel
@@ -28,17 +44,17 @@ WORKDIR /var/www/html
 
 # Copiar los archivos de la aplicación y dependencias
 COPY --from=php-builder /app/vendor ./vendor
-COPY --from=node-builder /app/public ./public
+COPY --from=node-builder /app/public ./public  # Assets compilados van aquí
 
-# Copia solo lo necesario para prod (evita .git, src, etc. si es posible; usa .dockerignore)
+# Copia el resto (después de assets para cache)
 COPY . .
 
-# Copiar archivos de configuración del servidor (después de COPY . . para sobrescribir si hay conflictos)
+# Copiar archivos de configuración del servidor
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Verificar sintaxis de Nginx en build time (opcional, para depurar)
+# Verificar sintaxis de Nginx en build time
 RUN nginx -t
 
 # Ajustar permisos para Laravel
