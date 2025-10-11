@@ -25,6 +25,11 @@ class Producto extends Model
         'nombre',
         'precio',
         'foto_url',
+        'disponible',
+
+    ];
+    protected $casts = [
+        'disponible' => 'boolean',
     ];
     public function pedidos()
     {

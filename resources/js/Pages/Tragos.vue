@@ -27,7 +27,9 @@ const whatsappMessage = encodeURIComponent('¡Hola El Point! Quisiera hacer un p
                     <div v-for="producto in productos" :key="producto.id_producto" class="menu-item">
                         <span class="item-name">{{ producto.nombre }}</span>
                         <span class="item-leader"></span>
-                        <span class="item-price">${{ producto.precio }}</span>
+
+                        <span v-if="producto.disponible" class="item-price">${{ producto.precio }}</span>
+                        <span v-else class="item-outofstock">Sin Stock</span>
                     </div>
                 </div>
 
@@ -101,5 +103,10 @@ const whatsappMessage = encodeURIComponent('¡Hola El Point! Quisiera hacer un p
     background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     color: white !important;
     border: none;
+}
+
+.item-outofstock {
+    font-weight: bold;
+    color: #dc3545;
 }
 </style>

@@ -96,6 +96,14 @@ class ProductoController extends Controller
         return redirect()->route('admin.productos.index')->with('success', 'Producto actualizado exitosamente.');
     }
 
+    public function toggleDisponibilidad(Producto $producto)
+    {
+        $producto->disponible = !$producto->disponible;
+        $producto->save();
+
+        return redirect()->back()->with('success', 'Disponibilidad del producto actualizada.');
+    }
+
     /**
      * Remove the specified resource from storage.
      */

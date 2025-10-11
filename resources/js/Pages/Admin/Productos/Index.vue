@@ -39,12 +39,13 @@ const deleteProduct = (id) => {
                             <th>Foto</th>
                             <th>Nombre</th>
                             <th>Precio</th>
-                            <th class="text-center" style="width: 150px">Acciones</th>
+                            <th class="text-center">Disponibilidad</th>
+                            <th class="text-center" style="width: 250px">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-if="productos.length === 0">
-                            <td colspan="5" class="text-center">No hay productos registrados.</td>
+                            <td colspan="6" class="text-center">No hay productos registrados.</td>
                         </tr>
                         <tr v-for="producto in productos" :key="producto.id_producto">
                             <td>{{ producto.id_producto }}</td>
@@ -56,11 +57,22 @@ const deleteProduct = (id) => {
                             <td>{{ producto.nombre }}</td>
                             <td>${{ producto.precio }}</td>
                             <td class="text-center">
-                                <Link :href="route('admin.productos.edit', producto.id_producto)"
-                                    class="btn btn-sm btn-info">
-                                Editar</Link>
-                                <button @click="deleteProduct(producto.id_producto)"
-                                    class="btn btn-sm btn-danger ml-1">Eliminar</button>
+                                <span v-if="producto.disponible" class="badge badge-success">En Stock</span>
+                                <span v-else class="badge badge-danger">Sin Stock</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group-vertical" role="group">
+                                    <Link :href="route('admin.productos.toggleDisponibilidad', producto.id_producto)"
+                                        method="patch" as="button" class="btn btn-sm"
+                                        :class="producto.disponible ? 'btn-warning' : 'btn-success'">
+                                    {{ producto.disponible ? 'Marcar sin Stock' : 'Poner en Stock' }}
+                                    </Link>
+
+                                    <Link :href="route('admin.productos.edit', producto.id_producto)"
+                                        class="btn btn-sm btn-info">Editar</Link>
+                                    <button @click="deleteProduct(producto.id_producto)"
+                                        class="btn btn-sm btn-danger">Eliminar</button>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

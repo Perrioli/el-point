@@ -36,6 +36,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
     Route::resource('inventario', ItemInventarioController::class);
     Route::resource('pedidos', PedidoController::class);
 
+    Route::patch('productos/{producto}/toggle-disponibilidad', [ProductoController::class, 'toggleDisponibilidad'])->name('productos.toggleDisponibilidad');
+
+
     Route::get('cocina', [CocinaController::class, 'index'])->name('cocina.index');
 
     Route::patch('pedidos/{pedido}/listo', [PedidoController::class, 'marcarComoListo'])->name('pedidos.listo');
