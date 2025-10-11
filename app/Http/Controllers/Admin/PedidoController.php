@@ -20,6 +20,7 @@ class PedidoController extends Controller
         }
 
         $pedidos = Pedido::where('caja_id', $cajaAbierta->id)
+        ->whereIn('status', ['pendiente', 'listo', 'entregado']) // Filtrar solo pedidos pendientes y listos
             ->with('productos')
             ->latest('id_pedido')
             ->get();
@@ -82,11 +83,64 @@ class PedidoController extends Controller
 
     public function edit(Pedido $pedido)
     {
-        //
+            $pedido->load('productos'); // Cargar los productos relacionados
+        return Inertia::render('Admin/Pedidos/EditPedidos', [
+            'pedido' => $pedido
+        ]);
     }
 
-    // MÉTODO CORREGIDO
+    // PedidoController.php
+
+// ...
+
     public function update(Request $request, Pedido $pedido)
+{
+    // 1. Validar los datos de edición
+    $validated = $request->validate([
+        'comentarios' => 'nullable|string',
+        'productos' => 'required|array|min:1', 
+        'productos.*.id_producto' => 'required|exists:productos,id_producto',
+        'productos.*.cantidad' => 'required|integer|min:1',
+        'productos.*.precio_unitario' => 'required|numeric|min:0',
+    ]);
+
+    $productosSync = [];
+    $nuevoPrecioTotal = 0;
+    
+    // 2. ITERAR Y CALCULAR EL NUEVO PRECIO TOTAL, Y PREPARAR LA SINCRONIZACIÓN
+    foreach ($validated['productos'] as $producto) {
+        $cantidad = $producto['cantidad'];
+        $precioUnitario = $producto['precio_unitario'];
+        
+        // Calcular el nuevo precio total (se acumula)
+        $nuevoPrecioTotal += ($cantidad * $precioUnitario);
+        
+        // 3. Definir la entrada ÚNICA para la sincronización de la tabla pivote
+        $productosSync[$producto['id_producto']] = [
+            'cantidad' => $cantidad,
+            'precio_unitario' => $precioUnitario,
+        ];
+    }
+    
+    // 4. ACTUALIZAR EL PEDIDO: Comentarios Y el precio_total
+    $pedido->update([
+        'comentarios' => $validated['comentarios'],
+        'precio_total' => $nuevoPrecioTotal, // ✅ Aquí se guarda el precio total calculado
+    ]);
+    
+    // 5. Sincronizar la tabla pivote con las nuevas cantidades/precios unitarios
+    $pedido->productos()->sync($productosSync);
+
+
+    // 6. Redirigir
+    return redirect()->route('admin.pedidos.index')
+                     ->with('success', 'Pedido actualizado exitosamente.');
+}
+    
+// ...
+
+    // MÉTODO CORREGIDO
+    public function marcarComoEntregado(Request $request, Pedido $pedido)
     {
         // Corregimos la lógica para que también actualice el estado
         $pedido->status = 'entregado';

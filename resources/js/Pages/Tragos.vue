@@ -177,6 +177,7 @@ const agregarTrago = (producto) => {
     </PublicLayout>
 </template>
 
+// Estilos
 <style scoped>
 /* Header de la carta */
 .carta-title {

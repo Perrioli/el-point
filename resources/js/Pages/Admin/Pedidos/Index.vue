@@ -48,8 +48,8 @@ const pedidosEntregados = computed(() => props.pedidos.filter(p => p.status === 
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="{ 'active': activeTab === 'entregados' }"
-                            @click.prevent="activeTab = 'entregados'" href="#">
+                        <a class="nav-link" :class="{ 'active': activeTab === 'entregado' }"
+                            @click.prevent="activeTab = 'entregado'" href="#">
                             Entregados <span class="badge badge-success">{{ pedidosEntregados.length }}</span>
                         </a>
                     </li>
@@ -69,7 +69,7 @@ const pedidosEntregados = computed(() => props.pedidos.filter(p => p.status === 
                     <PedidoCard v-for="pedido in pedidosListos" :key="pedido.id_pedido" :pedido="pedido" />
                 </div>
 
-                <div v-if="activeTab === 'entregados'">
+                <div v-if="activeTab === 'entregado'">
                     <p v-if="pedidosEntregados.length === 0" class="text-center text-muted">No hay pedidos entregados.
                     </p>
                     <PedidoCard v-for="pedido in pedidosEntregados" :key="pedido.id_pedido" :pedido="pedido" />
