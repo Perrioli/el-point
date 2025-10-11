@@ -6,20 +6,16 @@ const isMenuOpen = ref(false);
 const navRef = ref(null);
 const toggleBtnRef = ref(null);
 
-// Cerrar el menú cuando se hace clic fuera (más robusto con refs)
 const handleClickOutside = (event) => {
-    // Si el menú está cerrado, no hacemos nada
     if (!isMenuOpen.value) return;
 
     const navEl = navRef.value;
     const btnEl = toggleBtnRef.value;
     const target = event.target;
 
-    // Si el click ocurrió dentro del nav o dentro del botón, no cerramos
     if (navEl && (navEl === target || navEl.contains(target))) return;
     if (btnEl && (btnEl === target || btnEl.contains(target))) return;
 
-    // Caso contrario: cerramos el menú
     isMenuOpen.value = false;
 };
 
