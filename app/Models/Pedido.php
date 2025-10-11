@@ -20,6 +20,7 @@ class Pedido extends Model
         'precio_total',
         'comentarios',
         'hora_entrega',
+        'metodo_pago',
     ];
 
     public function productos()

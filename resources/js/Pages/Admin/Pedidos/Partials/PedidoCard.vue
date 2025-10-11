@@ -13,7 +13,15 @@ defineProps({
     <div class="card mb-3 shadow-sm">
         <div class="card-header d-flex justify-content-between">
             <strong>#{{ pedido.numero_caja }} - {{ pedido.persona }}</strong>
-            <strong>Total: ${{ pedido.precio_total }}</strong>
+            <div class="text-right">
+                <strong>Total: ${{ pedido.precio_total }}</strong><br>
+                <small class="text-muted">{{ pedido.metodo_pago }}</small>
+            </div>
+            <div>
+                <Link v-if="pedido.status === 'pendiente'" :href="route('admin.pedidos.edit',pedido.id_pedido)"
+                as="button" class="btn btn-sm btn-warning justify-content-center shadow">
+                Editar Pedido</Link>
+            </div>
         </div>
         <div class="card-body">
             <ul class="list-unstyled mb-0">
@@ -32,7 +40,7 @@ defineProps({
                     method="patch" as="button" class="btn btn-sm btn-warning">
                 Marcar como Listo
                 </Link>
-                <Link v-if="pedido.status === 'listo'" :href="route('admin.pedidos.update', pedido.id_pedido)"
+                <Link v-if="pedido.status === 'listo'" :href="route('admin.pedidos.entregado', pedido.id_pedido)"
                     method="patch" as="button" class="btn btn-sm btn-success">
                 Marcar como Entregado
                 </Link>

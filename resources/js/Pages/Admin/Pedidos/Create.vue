@@ -26,6 +26,7 @@ const cantidad = ref(1);
 const form = useForm({
     persona: '',
     comentarios: '',
+    metodo_pago:'',
     precio_total: 0,
     productos_pedido: [], // Array que contendrá los productos de este pedido
 });
@@ -95,6 +96,14 @@ const submit = () => {
                     <div class="form-group">
                         <label for="comentarios">Comentarios</label>
                         <textarea v-model="form.comentarios" id="comentarios" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="metodo_pago">Metodo de Pago</label>
+                        <select v-model="form.metodo_pago" id="metodo_pago" class="form-control" required>
+                            <option value="">-- Selecciona método de pago --</option>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia">Transferencia</option>
+                        </select>
                     </div>
                 </div>
             </div>
