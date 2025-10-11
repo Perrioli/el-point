@@ -111,6 +111,7 @@ onBeforeUnmount(() => {
             </div>
             <div class="text-center mt-3">
                 <p>&copy; 2025 - 2026 El Point. Todos los derechos reservados.</p>
+                <p>BEBER CON MODERACIÓN. PROHIBIDA SU VENTA A MENORES DE 18 Años. NO COMPARTA EL CONTENIDO CON MENORES.</p>
             </div>
             <div class="text-center mt-3">
                 <p>&copy; Archiment IT.</p>

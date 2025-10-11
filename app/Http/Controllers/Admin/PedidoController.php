@@ -50,6 +50,7 @@ class PedidoController extends Controller
             'productos_pedido.*.producto_id' => 'required|exists:productos,id_producto',
             'productos_pedido.*.cantidad' => 'required|integer|min:1',
             'productos_pedido.*.precio_unitario' => 'required|numeric|min:0',
+            'tipo_pago' => 'required|string|in:efectivo,transferencia',
         ]);
 
         $ultimoNumero = Pedido::where('caja_id', $cajaAbierta->id)->max('numero_caja');
@@ -113,6 +114,7 @@ class PedidoController extends Controller
             'productos_pedido.*.producto_id' => 'required|exists:productos,id_producto',
             'productos_pedido.*.cantidad' => 'required|integer|min:1',
             'productos_pedido.*.precio_unitario' => 'required|numeric|min:0',
+            'tipo_pago' => 'required|string|in:efectivo,transferencia',
 
         ]);
 
@@ -120,6 +122,7 @@ class PedidoController extends Controller
             'persona' => $validated['persona'],
             'comentarios' => $validated['comentarios'],
             'precio_total' => $validated['precio_total'],
+            'tipo_pago' => $validated['tipo_pago'],
         ]);
 
         $productosParaSincronizar = [];
