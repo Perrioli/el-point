@@ -79,6 +79,7 @@ const whatsappMessage = encodeURIComponent('¡Hola El Point! Quisiera hacer un p
     margin-top: 2rem;
     margin-bottom: 2rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: 'Rye', cursive;
 }
 
 .menu-list {

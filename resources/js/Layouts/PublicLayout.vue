@@ -73,6 +73,26 @@ onBeforeUnmount(() => {
             <slot />
         </main>
 
+        <section class="location-section py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-7 mb-4 mb-md-0">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3637.636621046679!2d-65.20535722464828!3d-24.25448497832982!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjTCsDE1JzE2LjIiUyA2NcKwMTInMTAuMCJX!5e0!3m2!1ses!2sar!4v1760225254174!5m2!1ses!2sar"
+                            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <div class="col-md-5 text-center text-md-left">
+                        <h2 class="font-weight-bold">¿Dónde está El Point?</h2>
+                        <p class="lead">
+                            Podrás encontrarnos en Dirección 1111. Tenemos modalidad TakeAway y para consumir en el
+                            local. ¡Te esperamos con tu Point!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <footer class="text-white pt-5 pb-4">
             <div class="container text-center text-md-left">
                 <div class="row">
@@ -95,7 +115,7 @@ onBeforeUnmount(() => {
                     </div>
 
                     <div class="col-md-3 mx-auto mt-3">
-                        <h6 class="text-uppercase mb-4 font-weight-bold">Síguenos</h6>
+                        <h6 class="text-uppercase mb-4 font-weight-bold">Seguinos</h6>
                         <a href="https://www.instagram.com/elpoint_juy/"
                             class="btn btn-outline-light btn-floating m-1"><i class="fab fa-instagram"></i></a>
                         <a href="https://www.tiktok.com/@elpointjuy" class="btn btn-outline-light btn-floating m-1"><i
@@ -111,7 +131,8 @@ onBeforeUnmount(() => {
             </div>
             <div class="text-center mt-3">
                 <p>&copy; 2025 - 2026 El Point. Todos los derechos reservados.</p>
-                <p>BEBER CON MODERACIÓN. PROHIBIDA SU VENTA A MENORES DE 18 Años. NO COMPARTA EL CONTENIDO CON MENORES.</p>
+                <p>BEBER CON MODERACIÓN. PROHIBIDA SU VENTA A MENORES DE 18 Años. NO COMPARTA EL CONTENIDO CON MENORES.
+                </p>
             </div>
             <div class="text-center mt-3">
                 <p>&copy; Archiment IT.</p>
@@ -298,5 +319,15 @@ footer .btn-floating:hover {
     footer h6 {
         text-align: center;
     }
+}
+
+.location-section {
+    background-color: #0d0d0d;
+    color: #cccccc;
+}
+
+.location-section h2 {
+    font-family: 'Rye', cursive;
+    color: #cccccc;
 }
 </style>

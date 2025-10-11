@@ -10,7 +10,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $productos = Producto::latest()->get();
+        $productos = Producto::where('es_promocion', false)->latest()->get();
 
         return Inertia::render('Home', [
             'productos' => $productos

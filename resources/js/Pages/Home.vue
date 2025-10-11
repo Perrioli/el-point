@@ -87,8 +87,12 @@ const modules = [Navigation, Pagination];
 }
 
 .menu-section {
-    background-color: #1a1a1a;
+    background-color: #0d0d0d;
     padding: 80px 0;
+}
+
+.menu-section h2 {
+    font-family: 'Rye', cursive;
 }
 
 .product-card {
