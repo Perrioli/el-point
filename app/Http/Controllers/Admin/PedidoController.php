@@ -92,7 +92,7 @@ class PedidoController extends Controller
     // PedidoController.php
 
 // ...
-
+//Medtodo editar
     public function update(Request $request, Pedido $pedido)
 {
     // 1. Validar los datos de edición
