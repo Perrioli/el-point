@@ -14,6 +14,13 @@ const activeTab = ref('pendientes');
 const pedidosPendientes = computed(() => props.pedidos.filter(p => p.status === 'pendiente'));
 const pedidosListos = computed(() => props.pedidos.filter(p => p.status === 'listo'));
 const pedidosEntregados = computed(() => props.pedidos.filter(p => p.status === 'entregado'));
+
+const deletePedido = (id) => {
+    if (confirm('¿Estás seguro de que deseas cancelar este pedido?')) {
+        router.delete(route('admin.pedidos.destroy', id));
+    }
+};
+
 </script>
 
 <template>
@@ -60,7 +67,8 @@ const pedidosEntregados = computed(() => props.pedidos.filter(p => p.status === 
                 <div v-if="activeTab === 'pendientes'">
                     <p v-if="pedidosPendientes.length === 0" class="text-center text-muted">No hay pedidos pendientes.
                     </p>
-                    <PedidoCard v-for="pedido in pedidosPendientes" :key="pedido.id_pedido" :pedido="pedido" />
+                    <PedidoCard v-for="pedido in pedidosPendientes" :key="pedido.id_pedido" :pedido="pedido"
+                        @delete-pedido="deletePedido" />
                 </div>
 
                 <div v-if="activeTab === 'listos'">

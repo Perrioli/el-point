@@ -2,22 +2,26 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
-    productos: {
-        type: Array,
-        required: true,
-    }
+    pedido: Object,
+    productos: Array,
 });
 
 const productoSeleccionadoId = ref(null);
 const cantidad = ref(1);
 
 const form = useForm({
-    persona: '',
-    comentarios: '',
-    precio_total: 0,
-    productos_pedido: [],
+    persona: props.pedido.persona,
+    comentarios: props.pedido.comentarios,
+    precio_total: props.pedido.precio_total,
+    productos_pedido: props.pedido.productos.map(p => ({
+        producto_id: p.id_producto,
+        nombre: p.nombre,
+        cantidad: p.pivot.cantidad,
+        precio_unitario: p.pivot.precio_unitario,
+    })),
 });
 
 const agregarProducto = () => {
@@ -59,21 +63,22 @@ const submit = () => {
         alert('Debes añadir al menos un producto al pedido.');
         return;
     }
-    form.post(route('admin.pedidos.store'));
+    form.put(route('admin.pedidos.update', props.pedido.id_pedido));
+};
+
+const goBack = () => {
+    router.get(route('admin.pedidos.index'));
 };
 </script>
 
 <template>
-
-    <Head title="Registrar Pedido" />
+    <Head title="Editar Pedido" />
     <AuthenticatedLayout>
-        <template #header>Registrar Nuevo Pedido</template>
+        <template #header>Editar Pedido #{{ pedido.numero_caja }}</template>
 
         <form @submit.prevent="submit">
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Datos del Pedido</h3>
-                </div>
+                <div class="card-header"><h3 class="card-title">Datos del Pedido</h3></div>
                 <div class="card-body">
                     <div class="form-group">
                         <label for="persona">Nombre del Cliente</label>
@@ -87,16 +92,13 @@ const submit = () => {
             </div>
 
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Añadir Productos</h3>
-                </div>
+                <div class="card-header"><h3 class="card-title">Añadir Productos</h3></div>
                 <div class="card-body row align-items-end">
                     <div class="col-md-6 form-group">
                         <label>Producto</label>
                         <select v-model="productoSeleccionadoId" class="form-control">
                             <option :value="null" disabled>-- Selecciona un producto --</option>
-                            <option v-for="producto in productos" :key="producto.id_producto"
-                                :value="producto.id_producto">
+                            <option v-for="producto in productos" :key="producto.id_producto" :value="producto.id_producto">
                                 {{ producto.nombre }} - ${{ producto.precio }}
                             </option>
                         </select>
@@ -112,9 +114,7 @@ const submit = () => {
             </div>
 
             <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Resumen del Pedido</h3>
-                </div>
+                <div class="card-header"><h3 class="card-title">Resumen del Pedido</h3></div>
                 <div class="card-body p-0">
                     <table class="table">
                         <thead>
@@ -127,16 +127,13 @@ const submit = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-if="form.productos_pedido.length === 0">
-                                <td colspan="5" class="text-center">Añade productos al pedido.</td>
-                            </tr>
+                            <tr v-if="form.productos_pedido.length === 0"><td colspan="5" class="text-center">Añade productos al pedido.</td></tr>
                             <tr v-for="(item, index) in form.productos_pedido" :key="index">
                                 <td>{{ item.nombre }}</td>
                                 <td>{{ item.cantidad }}</td>
                                 <td>${{ item.precio_unitario }}</td>
                                 <td>${{ (item.cantidad * item.precio_unitario).toFixed(2) }}</td>
-                                <td><button type="button" @click="quitarProducto(index)"
-                                        class="btn btn-sm btn-danger">Quitar</button></td>
+                                <td><button type="button" @click="quitarProducto(index)" class="btn btn-sm btn-danger">Quitar</button></td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -147,8 +144,9 @@ const submit = () => {
                         </tfoot>
                     </table>
                 </div>
-                <div class="card-footer text-right">
-                    <button type="submit" class="btn btn-primary" :disabled="form.processing">Guardar Pedido</button>
+                 <div class="card-footer">
+                    <button type="submit" class="btn btn-primary" :disabled="form.processing">Actualizar Pedido</button>
+                    <button type="button" class="btn btn-secondary ml-1" @click="goBack">Cancelar</button>
                 </div>
             </div>
         </form>

@@ -27,18 +27,27 @@ defineProps({
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
             <small>Pedido: {{ new Date(pedido.created_at).toLocaleTimeString() }}</small>
-            <div v-if="pedido.status !== 'entregado'">
-                <Link v-if="pedido.status === 'pendiente'" :href="route('admin.pedidos.listo', pedido.id_pedido)"
-                    method="patch" as="button" class="btn btn-sm btn-warning">
-                Marcar como Listo
-                </Link>
-                <Link v-if="pedido.status === 'listo'" :href="route('admin.pedidos.update', pedido.id_pedido)"
+
+            <div>
+                <template v-if="pedido.status === 'pendiente'">
+                    <Link :href="route('admin.pedidos.edit', pedido.id_pedido)" class="btn btn-sm btn-info">Editar
+                    </Link>
+                    <button @click="$emit('delete-pedido', pedido.id_pedido)"
+                        class="btn btn-sm btn-danger ml-1">Cancelar</button>
+                    <Link :href="route('admin.pedidos.listo', pedido.id_pedido)" method="patch" as="button"
+                        class="btn btn-sm btn-warning ml-1">
+                    Listo
+                    </Link>
+                </template>
+
+                <Link v-if="pedido.status === 'listo'" :href="route('admin.pedidos.entregado', pedido.id_pedido)"
                     method="patch" as="button" class="btn btn-sm btn-success">
-                Marcar como Entregado
+                Entregado
                 </Link>
+
+                <small v-if="pedido.status === 'entregado'">Entregado: {{ new
+                    Date(pedido.hora_entrega).toLocaleTimeString() }}</small>
             </div>
-            <small v-if="pedido.status === 'entregado'">Entregado: {{ new Date(pedido.hora_entrega).toLocaleTimeString()
-            }}</small>
         </div>
     </div>
 </template>

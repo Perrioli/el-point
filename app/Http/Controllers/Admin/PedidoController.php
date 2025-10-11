@@ -65,12 +65,19 @@ class PedidoController extends Controller
             'numero_caja' => $nuevoNumeroCaja,
         ]);
 
+        $productosParaSincronizar = [];
         foreach ($validated['productos_pedido'] as $productoData) {
-            $pedido->productos()->attach($productoData['producto_id'], [
-                'cantidad' => $productoData['cantidad'],
-                'precio_unitario' => $productoData['precio_unitario'],
-            ]);
+            $productoId = $productoData['producto_id'];
+            if (isset($productosParaSincronizar[$productoId])) {
+                $productosParaSincronizar[$productoId]['cantidad'] += $productoData['cantidad'];
+            } else {
+                $productosParaSincronizar[$productoId] = [
+                    'cantidad' => $productoData['cantidad'],
+                    'precio_unitario' => $productoData['precio_unitario'],
+                ];
+            }
         }
+        $pedido->productos()->sync($productosParaSincronizar);
 
         return redirect()->route('admin.pedidos.index')->with('success', 'Pedido registrado exitosamente.');
     }
@@ -82,18 +89,54 @@ class PedidoController extends Controller
 
     public function edit(Pedido $pedido)
     {
-        //
+        if ($pedido->status !== 'pendiente') {
+            return redirect()->route('admin.pedidos.index')->with('error', 'Solo se pueden editar pedidos pendientes.');
+        }
+
+        $pedido->load('productos');
+
+        $productos = Producto::orderBy('nombre')->get();
+
+        return Inertia::render('Admin/Pedidos/Edit', [
+            'pedido' => $pedido,
+            'productos' => $productos
+        ]);
     }
 
-    // MÉTODO CORREGIDO
     public function update(Request $request, Pedido $pedido)
     {
-        // Corregimos la lógica para que también actualice el estado
-        $pedido->status = 'entregado';
-        $pedido->hora_entrega = now();
-        $pedido->save();
+        $validated = $request->validate([
+            'persona' => 'required|string|max:255',
+            'comentarios' => 'nullable|string',
+            'precio_total' => 'required|numeric',
+            'productos_pedido' => 'required|array|min:1',
+            'productos_pedido.*.producto_id' => 'required|exists:productos,id_producto',
+            'productos_pedido.*.cantidad' => 'required|integer|min:1',
+            'productos_pedido.*.precio_unitario' => 'required|numeric|min:0',
 
-        return redirect()->route('admin.pedidos.index')->with('success', 'Pedido marcado como entregado.');
+        ]);
+
+        $pedido->update([
+            'persona' => $validated['persona'],
+            'comentarios' => $validated['comentarios'],
+            'precio_total' => $validated['precio_total'],
+        ]);
+
+        $productosParaSincronizar = [];
+        foreach ($validated['productos_pedido'] as $productoData) {
+            $productoId = $productoData['producto_id'];
+            if (isset($productosParaSincronizar[$productoId])) {
+                $productosParaSincronizar[$productoId]['cantidad'] += $productoData['cantidad'];
+            } else {
+                $productosParaSincronizar[$productoId] = [
+                    'cantidad' => $productoData['cantidad'],
+                    'precio_unitario' => $productoData['precio_unitario'],
+                ];
+            }
+        }
+        $pedido->productos()->sync($productosParaSincronizar);
+
+        return redirect()->route('admin.pedidos.index')->with('success', 'Pedido actualizado exitosamente.');
     }
 
     public function marcarComoListo(Pedido $pedido)
@@ -104,8 +147,23 @@ class PedidoController extends Controller
         return redirect()->route('admin.pedidos.index')->with('success', 'Pedido marcado como Listo para Retirar.');
     }
 
+    public function marcarComoEntregado(Pedido $pedido)
+    {
+        $pedido->status = 'entregado';
+        $pedido->hora_entrega = now();
+        $pedido->save();
+
+        return redirect()->route('admin.pedidos.index')->with('success', 'Pedido marcado como entregado.');
+    }
+
     public function destroy(Pedido $pedido)
     {
-        //
+        if ($pedido->status !== 'pendiente') {
+            return redirect()->route('admin.pedidos.index')->with('error', 'Solo se pueden cancelar pedidos pendientes.');
+        }
+
+        $pedido->delete();
+
+        return redirect()->route('admin.pedidos.index')->with('success', 'Pedido cancelado exitosamente.');
     }
 }

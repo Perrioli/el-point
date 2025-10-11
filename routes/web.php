@@ -9,6 +9,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PantallaController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\CocinaController;
 use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -19,9 +21,8 @@ Route::get('/nosotros', [HomeController::class, 'nosotros'])->name('nosotros.ind
 
 Route::get('/pantalla', [PantallaController::class, 'index'])->name('pantalla.index');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -35,7 +36,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
     Route::resource('inventario', ItemInventarioController::class);
     Route::resource('pedidos', PedidoController::class);
 
+    Route::get('cocina', [CocinaController::class, 'index'])->name('cocina.index');
+
     Route::patch('pedidos/{pedido}/listo', [PedidoController::class, 'marcarComoListo'])->name('pedidos.listo');
+    Route::patch('pedidos/{pedido}/entregado', [App\Http\Controllers\Admin\PedidoController::class, 'marcarComoEntregado'])->name('pedidos.entregado');
+
 
     Route::post('caja', [CajaController::class, 'store'])->name('caja.store');
     Route::patch('caja/{caja}', [CajaController::class, 'update'])->name('caja.update');

@@ -5,6 +5,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import { router } from '@inertiajs/vue3';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -23,5 +24,18 @@ createInertiaApp({
     },
     progress: {
         color: '#4B5563',
-    },
+    }
+});
+
+router.on('finish', () => {
+    if (window.AdminLTE) {
+        window.AdminLTE.layout.fixSidebar();
+        window.AdminLTE.pushmenu.init();
+    }
+});
+
+router.on('start', () => {
+    if (window.innerWidth < 992 && document.body.classList.contains('sidebar-open')) {
+        document.querySelector('[data-widget="pushmenu"]').click();
+    }
 });

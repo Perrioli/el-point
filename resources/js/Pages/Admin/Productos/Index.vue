@@ -31,7 +31,7 @@ const deleteProduct = (id) => {
                     <Link :href="route('admin.productos.create')" class="btn btn-primary">Crear Producto</Link>
                 </div>
             </div>
-            <div class="card-body p-0">
+            <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -39,7 +39,7 @@ const deleteProduct = (id) => {
                             <th>Foto</th>
                             <th>Nombre</th>
                             <th>Precio</th>
-                            <th style="width: 150px">Acciones</th>
+                            <th class="text-center" style="width: 150px">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,13 +55,12 @@ const deleteProduct = (id) => {
                             </td>
                             <td>{{ producto.nombre }}</td>
                             <td>${{ producto.precio }}</td>
-                            <td>
+                            <td class="text-center">
                                 <Link :href="route('admin.productos.edit', producto.id_producto)"
                                     class="btn btn-sm btn-info">
                                 Editar</Link>
-                                <button @click="deleteProduct(producto.id_producto)" class="btn btn-sm btn-danger ml-1">
-                                    Eliminar
-                                </button>
+                                <button @click="deleteProduct(producto.id_producto)"
+                                    class="btn btn-sm btn-danger ml-1">Eliminar</button>
                             </td>
                         </tr>
                     </tbody>

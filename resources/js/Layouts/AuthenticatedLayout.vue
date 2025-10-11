@@ -39,7 +39,10 @@ const logout = () => {
         </nav>
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <Link :href="route('dashboard')" class="brand-link">
-            <span class="brand-text font-weight-light">El Point - Admin</span>
+            <img src="/images/logo-navbar.png" alt="El Point Logo" class="brand-image img-circle elevation-3"
+                style="opacity: .8; height: 11rem; width: 2.8rem;">
+
+            <span class="brand-text font-weight-light">El Point</span>
             </Link>
 
             <div class="sidebar">

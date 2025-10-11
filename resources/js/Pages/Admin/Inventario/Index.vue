@@ -16,6 +16,7 @@ const deleteItem = (id) => {
 </script>
 
 <template>
+
     <Head title="Inventario" />
 
     <AuthenticatedLayout>
@@ -28,15 +29,15 @@ const deleteItem = (id) => {
                     <Link :href="route('admin.inventario.create')" class="btn btn-primary">Añadir Ítem</Link>
                 </div>
             </div>
-            <div class="card-body p-0">
+            <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                         <tr>
                             <th style="width: 10px">#</th>
                             <th>Ítem (Ingrediente/Producto)</th>
                             <th>Cantidad</th>
-                            <th>Costo Unitario</th>
-                            <th style="width: 150px">Acciones</th>
+                            <th>Costo</th>
+                            <th class="text-center" style="width: 150px">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -48,9 +49,12 @@ const deleteItem = (id) => {
                             <td>{{ item.producto_stock }}</td>
                             <td>{{ item.cantidad }}</td>
                             <td>${{ item.costo }}</td>
-                            <td>
-                                <Link :href="route('admin.inventario.edit', item.id_stock)" class="btn btn-sm btn-info">Editar</Link>
-                                <button @click="deleteItem(item.id_stock)" class="btn btn-sm btn-danger ml-1">Eliminar</button>
+                            <td class="text-center">
+                                <Link :href="route('admin.inventario.edit', item.id_stock)" class="btn btn-sm btn-info">
+                                Editar
+                                </Link>
+                                <button @click="deleteItem(item.id_stock)"
+                                    class="btn btn-sm btn-danger ml-1">Eliminar</button>
                             </td>
                         </tr>
                     </tbody>
