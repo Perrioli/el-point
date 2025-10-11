@@ -16,6 +16,7 @@ const form = useForm({
     nombre: props.producto.nombre,
     precio: props.producto.precio,
     foto: null,
+    es_promocion: props.producto.es_promocion,
 });
 
 const photoPreview = ref(props.producto.foto_url ? `/storage/${props.producto.foto_url}` : null);
@@ -36,6 +37,7 @@ const goBack = () => {
 </script>
 
 <template>
+
     <Head title="Editar Producto" />
 
     <AuthenticatedLayout>
@@ -56,18 +58,27 @@ const goBack = () => {
                     </div>
                     <div class="form-group">
                         <label for="precio">Precio</label>
-                        <input type="number" step="0.01" class="form-control" id="precio" v-model="form.precio" required>
+                        <input type="number" step="0.01" class="form-control" id="precio" v-model="form.precio"
+                            required>
                         <div v-if="form.errors.precio" class="text-danger">{{ form.errors.precio }}</div>
                     </div>
 
                     <div class="form-group">
                         <label for="foto">Cambiar Foto del Producto</label>
-                        <input type="file" class="form-control-file" id="foto" @input="form.foto = $event.target.files[0]" @change="updatePhotoPreview">
+                        <input type="file" class="form-control-file" id="foto"
+                            @input="form.foto = $event.target.files[0]" @change="updatePhotoPreview">
                         <div v-if="form.errors.foto" class="text-danger">{{ form.errors.foto }}</div>
 
                         <div v-if="photoPreview" class="mt-2">
                             <p>Vista Previa:</p>
                             <img :src="photoPreview" class="img-thumbnail" width="150" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="es_promocion"
+                                v-model="form.es_promocion">
+                            <label class="form-check-label" for="es_promocion">¿Es promoción?</label>
                         </div>
                     </div>
                 </div>

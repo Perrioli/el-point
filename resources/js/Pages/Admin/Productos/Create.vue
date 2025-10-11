@@ -2,18 +2,17 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
-import { ref } from 'vue'; // Importamos ref para la vista previa
+import { ref } from 'vue';
 
 const form = useForm({
     nombre: '',
     precio: null,
-    foto: null, // Añadimos el campo para la foto
+    foto: null,
+    es_promocion: false,
 });
 
-// Variable reactiva para la URL de la vista previa
 const photoPreview = ref(null);
 
-// Función para actualizar la vista previa
 const updatePhotoPreview = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -21,7 +20,6 @@ const updatePhotoPreview = (event) => {
 };
 
 const submit = () => {
-    // Al hacer post, Inertia manejará el archivo automáticamente
     form.post(route('admin.productos.store'));
 };
 
@@ -65,6 +63,13 @@ const goBack = () => {
 
                         <div v-if="photoPreview" class="mt-2">
                             <img :src="photoPreview" class="img-thumbnail" width="150" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="es_promocion"
+                                v-model="form.es_promocion">
+                            <label class="form-check-label" for="es_promocion">¿Es promoción?</label>
                         </div>
                     </div>
                 </div>

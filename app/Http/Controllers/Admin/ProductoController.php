@@ -40,6 +40,7 @@ class ProductoController extends Controller
             'nombre' => 'required|string|max:255',
             'precio' => 'required|numeric|min:0',
             'foto'   => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'es_promocion' => 'required|boolean',
         ]);
 
         if ($request->hasFile('foto')) {
@@ -79,6 +80,7 @@ class ProductoController extends Controller
             'nombre' => 'required|string|max:255',
             'precio' => 'required|numeric|min:0',
             'foto'   => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'es_promocion' => 'required|boolean',
         ]);
 
         if ($request->hasFile('foto')) {

@@ -26,10 +26,12 @@ class Producto extends Model
         'precio',
         'foto_url',
         'disponible',
-
+        'es_promocion',
     ];
+
     protected $casts = [
         'disponible' => 'boolean',
+        'es_promocion' => 'boolean',
     ];
     public function pedidos()
     {
