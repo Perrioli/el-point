@@ -56,6 +56,13 @@ const logout = () => {
                             <p>Dashboard</p>
                             </Link>
                         </li>
+                        <li v-if="$page.props.auth.can.isAdmin" class="nav-item">
+                            <Link :href="route('admin.usuarios.index')" class="nav-link"
+                                :class="{ 'active': $page.url.startsWith('/admin/usuarios') }">
+                            <i class="nav-icon fas fa-users-cog"></i>
+                            <p>Gestión de Usuarios</p>
+                            </Link>
+                        </li>
                         <li class="nav-item">
                             <Link :href="route('admin.productos.index')" class="nav-link"
                                 :class="{ 'active': $page.url.startsWith('/admin/productos') }">
@@ -63,7 +70,7 @@ const logout = () => {
                             <p>Productos</p>
                             </Link>
                         </li>
-                        <li class="nav-item">
+                        <li v-if="$page.props.auth.can.isAdmin" class="nav-item">
                             <Link :href="route('admin.inventario.index')" class="nav-link"
                                 :class="{ 'active': $page.url.startsWith('/admin/inventario') }">
                             <i class="nav-icon fas fa-boxes"></i>
@@ -77,7 +84,7 @@ const logout = () => {
                             <p>Pedidos</p>
                             </Link>
                         </li>
-                        <li class="nav-item">
+                        <li v-if="$page.props.auth.can.isAdmin" class="nav-item">
                             <Link :href="route('admin.registros.index')" class="nav-link"
                                 :class="{ 'active': $page.url.startsWith('/admin/registros') }">
                             <i class="nav-icon fas fa-history"></i>

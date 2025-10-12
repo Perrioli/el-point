@@ -71,7 +71,7 @@ const topProductsSeries = computed(() => [{
                 </div>
             </div>
             <div class="col-lg-3 col-6">
-                <div class="small-box bg-secondary">
+                <div v-if="$page.props.auth.can.isAdmin" class="small-box bg-secondary">
                     <div class="inner">
                         <h3><i class="fas fa-boxes"></i></h3>
                         <p>Inventario</p>

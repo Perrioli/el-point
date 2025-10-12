@@ -3,7 +3,8 @@ import PublicLayout from '@/Layouts/PublicLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
 defineProps({
-    productos: { type: Array, default: () => [] }
+    productosEnPromocion: Array,
+    productosRegulares: Array,
 });
 
 const whatsappNumber = '5493881234567';
@@ -20,14 +21,28 @@ const whatsappMessage = encodeURIComponent('¡Hola El Point! Quisiera hacer un p
                 <div class="d-flex justify-content-center mb-4">
                     <img src="/images/logo-el-point.png" alt="Logo El Point" style="max-width: 200px; height: auto;">
                 </div>
-
+                <div v-if="productosEnPromocion.length > 0" class="mb-5">
+                    <h1 class="text-center display-4 mb-4">Promociones</h1>
+                    <div class="menu-list mx-auto">
+                        <div v-for="producto in productosEnPromocion" :key="producto.id_producto" class="menu-item">
+                            <span class="item-name">{{ producto.nombre }}</span>
+                            <span class="item-leader"></span>
+                            <span v-if="producto.disponible" class="item-price">${{ producto.precio }}</span>
+                            <span v-else class="item-outofstock">Sin Stock</span>
+                        </div>
+                    </div>
+                </div>
                 <h1 class="text-center display-4 my-4">Carta de Tragos</h1>
 
                 <div class="menu-list mx-auto">
-                    <div v-for="producto in productos" :key="producto.id_producto" class="menu-item">
+                    <div v-if="productosRegulares.length === 0" class="text-center text-muted py-3">
+                        <p>Pronto nuevos tragos...</p>
+                    </div>
+                    <div v-for="producto in productosRegulares" :key="producto.id_producto" class="menu-item">
                         <span class="item-name">{{ producto.nombre }}</span>
                         <span class="item-leader"></span>
-                        <span class="item-price">${{ producto.precio }}</span>
+                        <span v-if="producto.disponible" class="item-price">${{ producto.precio }}</span>
+                        <span v-else class="item-outofstock">Sin Stock</span>
                     </div>
                 </div>
 
@@ -64,6 +79,7 @@ const whatsappMessage = encodeURIComponent('¡Hola El Point! Quisiera hacer un p
     margin-top: 2rem;
     margin-bottom: 2rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: 'Rye', cursive;
 }
 
 .menu-list {
@@ -101,5 +117,10 @@ const whatsappMessage = encodeURIComponent('¡Hola El Point! Quisiera hacer un p
     background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
     color: white !important;
     border: none;
+}
+
+.item-outofstock {
+    font-weight: bold;
+    color: #dc3545;
 }
 </style>

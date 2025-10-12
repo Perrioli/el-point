@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Caja;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Gate;
 
 class CajaController extends Controller
 {
     public function store(Request $request)
     {
+        Gate::authorize('open-register');
+
         $cajaAbierta = Caja::where('estado', 'abierta')->first();
         if ($cajaAbierta) {
             return redirect()->route('admin.pedidos.index')->with('error', 'Ya hay una caja abierta.');

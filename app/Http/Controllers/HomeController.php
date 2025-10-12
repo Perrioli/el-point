@@ -9,20 +9,23 @@ use App\Models\Producto;
 class HomeController extends Controller
 {
     public function index()
-{
-    $productos = Producto::latest()->get();
+    {
+        $productos = Producto::where('es_promocion', false)->latest()->get();
 
-    return Inertia::render('Home', [
-        'productos' => $productos
-    ]);
-}
+        return Inertia::render('Home', [
+            'productos' => $productos
+        ]);
+    }
 
     public function tragos()
     {
-        $productos = Producto::latest()->get();
+        [$productosEnPromocion, $productosRegulares] = Producto::latest()->get()->partition(function ($producto) {
+            return $producto->es_promocion;
+        });
 
         return Inertia::render('Tragos', [
-            'productos' => $productos
+            'productosEnPromocion' => $productosEnPromocion->values(),
+            'productosRegulares' => $productosRegulares->values(),
         ]);
     }
 

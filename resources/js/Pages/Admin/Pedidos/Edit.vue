@@ -22,6 +22,7 @@ const form = useForm({
         cantidad: p.pivot.cantidad,
         precio_unitario: p.pivot.precio_unitario,
     })),
+    tipo_pago: props.pedido.tipo_pago || 'efectivo',
 });
 
 const agregarProducto = () => {
@@ -72,13 +73,16 @@ const goBack = () => {
 </script>
 
 <template>
+
     <Head title="Editar Pedido" />
     <AuthenticatedLayout>
         <template #header>Editar Pedido #{{ pedido.numero_caja }}</template>
 
         <form @submit.prevent="submit">
             <div class="card">
-                <div class="card-header"><h3 class="card-title">Datos del Pedido</h3></div>
+                <div class="card-header">
+                    <h3 class="card-title">Datos del Pedido</h3>
+                </div>
                 <div class="card-body">
                     <div class="form-group">
                         <label for="persona">Nombre del Cliente</label>
@@ -88,17 +92,27 @@ const goBack = () => {
                         <label for="comentarios">Comentarios</label>
                         <textarea v-model="form.comentarios" id="comentarios" class="form-control"></textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="tipo_pago">Tipo de Pago</label>
+                        <select v-model="form.tipo_pago" id="tipo_pago" class="form-control">
+                            <option value="efectivo">Efectivo</option>
+                            <option value="transferencia">Transferencia</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <div class="card">
-                <div class="card-header"><h3 class="card-title">Añadir Productos</h3></div>
+                <div class="card-header">
+                    <h3 class="card-title">Añadir Productos</h3>
+                </div>
                 <div class="card-body row align-items-end">
                     <div class="col-md-6 form-group">
                         <label>Producto</label>
                         <select v-model="productoSeleccionadoId" class="form-control">
                             <option :value="null" disabled>-- Selecciona un producto --</option>
-                            <option v-for="producto in productos" :key="producto.id_producto" :value="producto.id_producto">
+                            <option v-for="producto in productos" :key="producto.id_producto"
+                                :value="producto.id_producto">
                                 {{ producto.nombre }} - ${{ producto.precio }}
                             </option>
                         </select>
@@ -114,7 +128,9 @@ const goBack = () => {
             </div>
 
             <div class="card">
-                <div class="card-header"><h3 class="card-title">Resumen del Pedido</h3></div>
+                <div class="card-header">
+                    <h3 class="card-title">Resumen del Pedido</h3>
+                </div>
                 <div class="card-body p-0">
                     <table class="table">
                         <thead>
@@ -127,13 +143,16 @@ const goBack = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-if="form.productos_pedido.length === 0"><td colspan="5" class="text-center">Añade productos al pedido.</td></tr>
+                            <tr v-if="form.productos_pedido.length === 0">
+                                <td colspan="5" class="text-center">Añade productos al pedido.</td>
+                            </tr>
                             <tr v-for="(item, index) in form.productos_pedido" :key="index">
                                 <td>{{ item.nombre }}</td>
                                 <td>{{ item.cantidad }}</td>
                                 <td>${{ item.precio_unitario }}</td>
                                 <td>${{ (item.cantidad * item.precio_unitario).toFixed(2) }}</td>
-                                <td><button type="button" @click="quitarProducto(index)" class="btn btn-sm btn-danger">Quitar</button></td>
+                                <td><button type="button" @click="quitarProducto(index)"
+                                        class="btn btn-sm btn-danger">Quitar</button></td>
                             </tr>
                         </tbody>
                         <tfoot>
@@ -144,7 +163,7 @@ const goBack = () => {
                         </tfoot>
                     </table>
                 </div>
-                 <div class="card-footer">
+                <div class="card-footer">
                     <button type="submit" class="btn btn-primary" :disabled="form.processing">Actualizar Pedido</button>
                     <button type="button" class="btn btn-secondary ml-1" @click="goBack">Cancelar</button>
                 </div>

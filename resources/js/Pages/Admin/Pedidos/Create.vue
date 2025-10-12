@@ -18,6 +18,7 @@ const form = useForm({
     comentarios: '',
     precio_total: 0,
     productos_pedido: [],
+    tipo_pago: 'efectivo',
 });
 
 const agregarProducto = () => {
@@ -82,6 +83,13 @@ const submit = () => {
                     <div class="form-group">
                         <label for="comentarios">Comentarios</label>
                         <textarea v-model="form.comentarios" id="comentarios" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo_pago">Tipo de Pago</label>
+                        <select v-model="form.tipo_pago" id="tipo_pago" class="form-control">
+                            <option value="efectivo">Efectivo</option>
+                            <option value="transferencia">Transferencia</option>
+                        </select>
                     </div>
                 </div>
             </div>

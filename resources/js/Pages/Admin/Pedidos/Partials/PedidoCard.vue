@@ -13,7 +13,12 @@ defineProps({
     <div class="card mb-3 shadow-sm">
         <div class="card-header d-flex justify-content-between">
             <strong>#{{ pedido.numero_caja }} - {{ pedido.persona }}</strong>
-            <strong>Total: ${{ pedido.precio_total }}</strong>
+            <div>
+                <span class="badge" :class="pedido.tipo_pago === 'efectivo' ? 'badge-success' : 'badge-primary'">
+                    {{ pedido.tipo_pago }}
+                </span>
+                <strong class="ml-3">Total: ${{ pedido.precio_total }}</strong>
+            </div>
         </div>
         <div class="card-body">
             <ul class="list-unstyled mb-0">
@@ -26,7 +31,16 @@ defineProps({
             </p>
         </div>
         <div class="card-footer d-flex justify-content-between align-items-center">
-            <small>Pedido: {{ new Date(pedido.created_at).toLocaleTimeString() }}</small>
+            <div>
+                <small class="d-block text-capitalize">
+                    <i class="fas"
+                        :class="pedido.tipo_pago === 'efectivo' ? 'fa-money-bill-wave' : 'fa-credit-card'"></i>
+                    Pago: {{ pedido.tipo_pago }}
+                </small>
+                <small class="text-muted">
+                    Pedido: {{ new Date(pedido.created_at).toLocaleTimeString() }}
+                </small>
+            </div>
 
             <div>
                 <template v-if="pedido.status === 'pendiente'">
@@ -39,13 +53,11 @@ defineProps({
                     Listo
                     </Link>
                 </template>
-
                 <Link v-if="pedido.status === 'listo'" :href="route('admin.pedidos.entregado', pedido.id_pedido)"
                     method="patch" as="button" class="btn btn-sm btn-success">
                 Entregado
                 </Link>
-
-                <small v-if="pedido.status === 'entregado'">Entregado: {{ new
+                <small v-if="pedido.status === 'entregado'" class="text-muted">Entregado: {{ new
                     Date(pedido.hora_entrega).toLocaleTimeString() }}</small>
             </div>
         </div>
