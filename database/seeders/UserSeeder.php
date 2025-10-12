@@ -13,9 +13,9 @@ class UserSeeder extends Seeder
     {
         User::create([
             'username'        => 'admin',
-            'nombre_completo' => 'Tomas Quispe',
+            'nombre_completo' => 'Pedro Ortega',
             'email'           => 'admin@elpoint.com',
-            'password'        => Hash::make('12345678'),
+            'password'        => Hash::make('Pedroelpoint5202'),
             'rol'             => 'Administrador',
         ]);
     }
