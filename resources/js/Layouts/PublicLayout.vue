@@ -77,10 +77,12 @@ onBeforeUnmount(() => {
             <div class="container">
                 <div class="row align-items-center">
                     <div class="col-md-7 mb-4 mb-md-0">
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3637.636621046679!2d-65.20535722464828!3d-24.25448497832982!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjTCsDE1JzE2LjIiUyA2NcKwMTInMTAuMCJX!5e0!3m2!1ses!2sar!4v1760225254174!5m2!1ses!2sar"
-                            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        <div class="map-responsive-container">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3637.636621046679!2d-65.20535722464828!3d-24.25448497832982!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjTCsDE1JzE2LjIiUyA2NcKwMTInMTAuMCJX!5e0!3m2!1ses!2sar!4v1760225254174!5m2!1ses!2sar"
+                                style="border:0;" allowfullscreen="" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
                     </div>
                     <div class="col-md-5 text-center text-md-left">
                         <h2 class="font-weight-bold">¿Dónde está El Point?</h2>
@@ -329,5 +331,21 @@ footer .btn-floating:hover {
 .location-section h2 {
     font-family: 'Rye', cursive;
     color: #cccccc;
+}
+
+.map-responsive-container {
+    overflow: hidden;
+    position: relative;
+    height: 0;
+    padding-bottom: 56.25%;
+    border-radius: 8px;
+}
+
+.map-responsive-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
 </style>
