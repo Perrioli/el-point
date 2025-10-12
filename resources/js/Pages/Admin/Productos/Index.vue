@@ -28,7 +28,9 @@ const deleteProduct = (id) => {
             <div class="card-header">
                 <h3 class="card-title">Listado de Productos</h3>
                 <div class="card-tools">
-                    <Link :href="route('admin.productos.create')" class="btn btn-primary">Crear Producto</Link>
+                    <Link v-if="$page.props.auth.can.isAdmin" :href="route('admin.productos.create')"
+                        class="btn btn-primary">
+                    Crear Producto</Link>
                 </div>
             </div>
             <div class="table-responsive">
@@ -68,9 +70,12 @@ const deleteProduct = (id) => {
                                     {{ producto.disponible ? 'Marcar sin Stock' : 'Poner en Stock' }}
                                     </Link>
 
-                                    <Link :href="route('admin.productos.edit', producto.id_producto)"
-                                        class="btn btn-sm btn-info">Editar</Link>
-                                    <button @click="deleteProduct(producto.id_producto)"
+                                    <Link v-if="$page.props.auth.can.isAdmin"
+                                        :href="route('admin.productos.edit', producto.id_producto)"
+                                        class="btn btn-sm btn-info">
+                                    Editar</Link>
+                                    <button v-if="$page.props.auth.can.isAdmin"
+                                        @click="deleteProduct(producto.id_producto)"
                                         class="btn btn-sm btn-danger">Eliminar</button>
                                 </div>
                             </td>

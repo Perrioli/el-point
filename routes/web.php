@@ -11,6 +11,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CocinaController;
+use App\Http\Controllers\Admin\UserController;
 use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -31,6 +32,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
+
+    Route::resource('usuarios', UserController::class)->names('usuarios');
+
 
     Route::resource('productos', ProductoController::class);
     Route::resource('inventario', ItemInventarioController::class);
