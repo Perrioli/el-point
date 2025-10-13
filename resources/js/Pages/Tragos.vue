@@ -125,4 +125,10 @@ const whatsappMessage = encodeURIComponent('¡Hola El Point! Quisiera hacer un p
     font-weight: bold;
     color: #dc3545;
 }
+
+@media (max-width: 768px) {
+    .menu-card h1 {
+        font-size: 2.5rem;
+    }
+}
 </style>
