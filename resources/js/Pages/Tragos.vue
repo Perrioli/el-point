@@ -94,10 +94,14 @@ const whatsappMessage = encodeURIComponent('¡Hola El Point! Quisiera hacer un p
     display: flex;
     align-items: baseline;
     margin-bottom: 1rem;
+    overflow: hidden;
 }
 
 .item-name {
     flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .item-leader {

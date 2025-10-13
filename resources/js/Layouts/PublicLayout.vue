@@ -87,7 +87,7 @@ onBeforeUnmount(() => {
                     <div class="col-md-5 text-center text-md-left">
                         <h2 class="font-weight-bold">¿Dónde está El Point?</h2>
                         <p class="lead">
-                            Podrás encontrarnos en Dirección 1111. Tenemos modalidad TakeAway y para consumir en el
+                            Podrás encontrarnos en Remedios de escalada 180, Palpala Jujuy. Tenemos modalidad TakeAway y para consumir en el
                             local. ¡Te esperamos con tu Point!
                         </p>
                     </div>
@@ -126,8 +126,8 @@ onBeforeUnmount(() => {
 
                     <div class="col-md-4 mx-auto mt-3">
                         <h6 class="text-uppercase mb-4 font-weight-bold">Contacto</h6>
-                        <p><i class="fas fa-home me-2"></i> DIRECCION, San Salvador de Jujuy</p>
-                        <p><i class="fas fa-phone me-2"></i> +54 9 388 123 4567</p>
+                        <p><i class="fas fa-home me-2"></i> Remedios de Escalada 180, Palpala</p>
+                        <p><i class="fas fa-phone me-2"></i> -</p>
                     </div>
                 </div>
             </div>

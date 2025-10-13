@@ -7,7 +7,7 @@ import { Head } from '@inertiajs/vue3';
     <Head title="Sobre Nosotros" />
     <PublicLayout>
         <div class="container text-white">
-            <h1 class="text-center display-4 my-4">Nuestra Historia</h1>
+            <h1 class="text-center display-4 my-4">Seccion en desarrollo</h1>
             <div class="row align-items-center">
                 <div class="col-md-6 mb-4">
                     <img src="/images/equipo.jpg" class="img-fluid rounded" alt="El equipo de El Point">
