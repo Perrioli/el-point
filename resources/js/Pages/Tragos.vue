@@ -92,23 +92,21 @@ const whatsappMessage = encodeURIComponent('¡Hola El Point! Quisiera hacer un p
 
 .menu-item {
     display: flex;
-    align-items: baseline;
-    margin-bottom: 1rem;
-    overflow: hidden;
+    align-items: flex-start; 
+    margin-bottom: 1.5rem;
 }
 
 .item-name {
-    flex-shrink: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    flex-basis: 60%;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 .item-leader {
     flex-grow: 1;
     border-bottom: 2px dotted rgba(255, 255, 255, 0.3);
     margin: 0 0.8rem;
-    transform: translateY(-4px);
+    transform: translateY(15px);
 }
 
 .item-price {
