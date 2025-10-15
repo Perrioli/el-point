@@ -137,7 +137,7 @@ onBeforeUnmount(() => {
                 </p>
             </div>
             <div class="text-center mt-3">
-                <p>&copy; Archiment IT.</p>
+                <p>&copy; Artinnex Code Artisans</p>
             </div>
             <div class="text-center mt-2">
                 <Link :href="route('login')" class="text-muted" style="font-size: 0.8rem; text-decoration: none;">
