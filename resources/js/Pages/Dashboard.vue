@@ -9,6 +9,7 @@ const props = defineProps({
     productosMasVendidos: Array,
     pedidosPendientes: Number,
     pedidosListos: Number,
+    cajaActualTotal: Number,
     currentFilter: String,
 });
 
@@ -118,6 +119,16 @@ const topProductsSeries = computed(() => [{
                     <div class="card-body text-center">
                         <h1 class="display-4 font-weight-bold">${{ totalFacturado.toFixed(2) }}</h1>
                         <p class="text-muted">Según el filtro seleccionado</p>
+                    </div>
+                </div>
+
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Caja Actual</h3>
+                    </div>
+                    <div class="card-body text-center">
+                        <h1 class="display-4 font-weight-bold text-success">${{ cajaActualTotal.toFixed(2) }}</h1>
+                        <p class="text-muted">Ventas de la sesión actual</p>
                     </div>
                 </div>
             </div>

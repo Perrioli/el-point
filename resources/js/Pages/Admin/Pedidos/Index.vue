@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import PedidoCard from '@/Pages/Admin/Pedidos/Partials/PedidoCard.vue';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     pedidos: { type: Array },

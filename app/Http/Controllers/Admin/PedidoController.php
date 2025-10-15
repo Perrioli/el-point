@@ -162,7 +162,7 @@ class PedidoController extends Controller
     public function destroy(Pedido $pedido)
     {
         if ($pedido->status !== 'pendiente') {
-            return redirect()->route('admin.pedidos.index')->with('error', 'Solo se pueden cancelar pedidos pendientes.');
+            return redirect()->back()->with('error', 'Solo se pueden cancelar pedidos pendientes.');
         }
 
         $pedido->delete();

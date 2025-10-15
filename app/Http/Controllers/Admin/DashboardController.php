@@ -15,6 +15,7 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $filter = $request->input('filter', 'daily');
+        $startDate = now();
 
         switch ($filter) {
             case 'weekly':
@@ -32,16 +33,15 @@ class DashboardController extends Controller
                 break;
         }
 
-        $totalFacturado = Caja::where('estado', 'cerrada')
-            ->where('fecha_cierre', '>=', $startDate)
-            ->withSum('pedidos', 'precio_total')
-            ->get()
-            ->sum('pedidos_sum_precio_total');
+        $totalFacturado = (float) Pedido::whereIn('status', ['listo', 'entregado'])
+            ->where('created_at', '>=', $startDate)
+            ->sum('precio_total');
 
         $productosMasVendidos = DB::table('pedido_producto')
             ->join('productos', 'pedido_producto.producto_id', '=', 'productos.id_producto')
             ->join('pedidos', 'pedido_producto.pedido_id', '=', 'pedidos.id_pedido')
             ->where('pedidos.created_at', '>=', $startDate)
+            ->whereIn('pedidos.status', ['listo', 'entregado'])
             ->select('productos.nombre', DB::raw('SUM(pedido_producto.cantidad) as total_vendido'))
             ->groupBy('productos.nombre')
             ->orderBy('total_vendido', 'desc')
@@ -51,18 +51,22 @@ class DashboardController extends Controller
         $cajaAbierta = Caja::where('estado', 'abierta')->first();
         $pedidosPendientes = 0;
         $pedidosListos = 0;
+        $cajaActualTotal = 0;
 
-        if($cajaAbierta){
+        if ($cajaAbierta) {
             $pedidosPendientes = $cajaAbierta->pedidos()->where('status', 'pendiente')->count();
             $pedidosListos = $cajaAbierta->pedidos()->where('status', 'listo')->count();
+            $cajaActualTotal = (float) $cajaAbierta->pedidos()
+                ->whereIn('status', ['listo', 'entregado'])
+                ->sum('precio_total');
         }
-
 
         return Inertia::render('Dashboard', [
             'totalFacturado' => $totalFacturado,
             'productosMasVendidos' => $productosMasVendidos,
             'pedidosPendientes' => $pedidosPendientes,
             'pedidosListos' => $pedidosListos,
+            'cajaActualTotal' => $cajaActualTotal,
             'currentFilter' => $filter,
         ]);
     }

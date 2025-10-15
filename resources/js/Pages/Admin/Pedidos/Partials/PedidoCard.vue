@@ -7,6 +7,9 @@ defineProps({
         required: true,
     }
 });
+
+defineEmits(['delete-pedido']);
+
 </script>
 
 <template>
