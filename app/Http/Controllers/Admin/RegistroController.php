@@ -14,10 +14,11 @@ class RegistroController extends Controller
         $query = Caja::query()->where('estado', 'cerrada');
 
         $query->when($request->input('date'), function ($q, $date) {
-            return $q->whereDate('fecha_apertura', $date);
+            return $q->whereDate('fecha_apertura', '>=', $date);
         });
 
-        $registros = $query->withSum('pedidos', 'precio_total')
+        $registros = $query->with(['openedBy', 'closedBy'])
+            ->withSum('pedidos', 'precio_total')
             ->latest('fecha_cierre')
             ->paginate(10)
             ->withQueryString();
@@ -30,7 +31,7 @@ class RegistroController extends Controller
 
     public function show(Caja $caja)
     {
-        $caja->load('pedidos.productos');
+        $caja->load(['pedidos.productos', 'openedBy', 'closedBy']);
 
         return Inertia::render('Admin/Registros/Show', [
             'registro' => $caja

@@ -13,6 +13,7 @@ class Pedido extends Model
 
     protected $fillable = [
         'caja_id',
+        'user_id',
         'numero_pedido',
         'numero_caja',
         'persona',
@@ -33,5 +34,10 @@ class Pedido extends Model
     public function caja()
     {
         return $this->belongsTo(Caja::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

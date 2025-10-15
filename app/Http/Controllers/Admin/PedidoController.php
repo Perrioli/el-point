@@ -20,7 +20,7 @@ class PedidoController extends Controller
         }
 
         $pedidos = Pedido::where('caja_id', $cajaAbierta->id)
-            ->with('productos')
+            ->with(['productos', 'user'])
             ->latest('id_pedido')
             ->get();
 
@@ -59,6 +59,7 @@ class PedidoController extends Controller
 
         $pedido = Pedido::create([
             'caja_id' => $cajaAbierta->id,
+            'user_id' => auth()->id(),
             'persona' => $validated['persona'],
             'comentarios' => $validated['comentarios'],
             'precio_total' => $validated['precio_total'],
@@ -147,7 +148,7 @@ class PedidoController extends Controller
         $pedido->status = 'listo';
         $pedido->save();
 
-        return redirect()->route('admin.pedidos.index')->with('success', 'Pedido marcado como Listo para Retirar.');
+        return redirect()->back()->with('success', 'Pedido marcado como listo.');
     }
 
     public function marcarComoEntregado(Pedido $pedido)

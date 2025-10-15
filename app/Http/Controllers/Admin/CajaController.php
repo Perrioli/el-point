@@ -22,6 +22,7 @@ class CajaController extends Controller
         Caja::create([
             'fecha_apertura' => Carbon::now(),
             'estado' => 'abierta',
+            'opened_by_user_id' => auth()->id(),
         ]);
 
         return redirect()->route('admin.pedidos.index')->with('success', 'Caja abierta exitosamente.');
@@ -31,7 +32,7 @@ class CajaController extends Controller
     {
         $caja->fecha_cierre = Carbon::now();
         $caja->estado = 'cerrada';
-
+        $caja->closed_by_user_id = auth()->id();
         $caja->save();
 
         return redirect()->route('admin.pedidos.index')->with('success', 'Caja cerrada exitosamente.');

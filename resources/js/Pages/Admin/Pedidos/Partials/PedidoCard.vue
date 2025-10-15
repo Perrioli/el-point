@@ -43,6 +43,9 @@ defineEmits(['delete-pedido']);
                 <small class="text-muted">
                     Pedido: {{ new Date(pedido.created_at).toLocaleTimeString() }}
                 </small>
+                <small v-if="pedido.user" class="text-muted d-block">
+                    Por: {{ pedido.user.nombre_completo }}
+                </small>
             </div>
 
             <div>
