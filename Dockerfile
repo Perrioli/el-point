@@ -32,6 +32,8 @@ RUN rm -f /etc/nginx/sites-enabled/default
 # Se copia nuestra configuración personalizada
 COPY nginx.conf /etc/nginx/nginx.conf
 # Se asegura que PHP-FPM escuche en el puerto 9000
+COPY docker/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 RUN sed -i 's|listen = .*|listen = 127.0.0.1:9000|' /usr/local/etc/php-fpm.d/www.conf
 
 # 5. ESTABLECER DIRECTORIO DE TRABAJO
