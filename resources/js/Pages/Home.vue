@@ -42,7 +42,7 @@ const modules = [Navigation, Pagination];
                     <swiper-slide v-for="producto in productos" :key="producto.id_producto">
                         <div class="card product-card border-secondary h-100">
                             <img v-if="producto.foto_url" :src="`/storage/${producto.foto_url}`" class="card-img-top"
-                                :alt="producto.nombre" style="height: 250px; object-fit: cover;">
+                                :alt="producto.nombre" style="height: 250px; object-fit: contain;">
                             <div class="card-body text-center">
                                 <h5 class="card-title text-white">{{ producto.nombre }}</h5>
                                 <p class="card-text h4 font-weight-bold text-primary">${{ producto.precio }}</p>
