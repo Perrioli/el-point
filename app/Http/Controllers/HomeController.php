@@ -10,7 +10,10 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $productos = Producto::where('es_promocion', false)->latest()->get();
+        $productos = Producto::where('es_promocion', false)
+            ->whereNotNull('foto_url')
+            ->latest()
+            ->get();
 
         return Inertia::render('Home', [
             'productos' => $productos
