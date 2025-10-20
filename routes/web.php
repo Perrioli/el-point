@@ -54,6 +54,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
 
     Route::get('registros', [RegistroController::class, 'index'])->name('registros.index');
     Route::get('registros/{caja}', [RegistroController::class, 'show'])->name('registros.show');
+
+    Route::patch('inventario/{id}/increment', [ItemInventarioController::class, 'increment'])
+        ->name('inventario.increment');
+    Route::patch('inventario/{id}/decrement', [ItemInventarioController::class, 'decrement'])
+        ->name('inventario.decrement');
 });
 
 require __DIR__ . '/auth.php';

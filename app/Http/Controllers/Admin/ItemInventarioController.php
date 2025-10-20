@@ -59,4 +59,32 @@ class ItemInventarioController extends Controller
         $inventario->delete();
         return redirect()->route('admin.inventario.index')->with('success', 'Ítem eliminado del inventario.');
     }
+
+    public function increment($id)
+    {
+        $item = ItemInventario::where('id_stock', $id)->firstOrFail();
+
+        $item->cantidad = ($item->cantidad ?? 0) + 1;
+        $item->save();
+
+        return back()->with('success', 'Cantidad incrementada correctamente.');
+    }
+
+    /**
+     * ➖ Decrementar cantidad (PATCH)
+     */
+    public function decrement($id)
+    {
+        $item = ItemInventario::where('id_stock', $id)->firstOrFail();
+
+        $nuevaCantidad = ($item->cantidad ?? 0) - 1;
+        if ($nuevaCantidad < 0) {
+            $nuevaCantidad = 0;
+        }
+
+        $item->cantidad = $nuevaCantidad;
+        $item->save();
+
+        return back()->with('success', 'Cantidad reducida correctamente.');
+    }
 }
