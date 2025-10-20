@@ -70,9 +70,6 @@ class ItemInventarioController extends Controller
         return back()->with('success', 'Cantidad incrementada correctamente.');
     }
 
-    /**
-     * ➖ Decrementar cantidad (PATCH)
-     */
     public function decrement($id)
     {
         $item = ItemInventario::where('id_stock', $id)->firstOrFail();
