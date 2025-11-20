@@ -22,7 +22,7 @@ import { Link } from '@inertiajs/vue3';
 
 <style scoped>
 .auth-background {
-    background-image: url('/images/fondo-bar.jpg');
+    background-image: url('/images/fondo-bar.webp');
     background-size: cover;
     background-position: center center;
 }

@@ -168,7 +168,7 @@ onBeforeUnmount(() => {
 /* --- BACKGROUND --- */
 .themed-background {
     position: relative;
-    background-image: url('/images/fondo-bar.jpg');
+    background-image: url('/images/fondo-bar.webp');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
