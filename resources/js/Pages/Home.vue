@@ -1,7 +1,6 @@
 <script setup>
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import { Head } from '@inertiajs/vue3';
-// Swiper imports remain as they are
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -59,45 +58,39 @@ const modules = [Navigation, Pagination];
 </template>
 
 <style scoped>
-/* SECTION 1: HERO (VIDEO) STYLES */
 .hero-section {
-    height: 100vh; /* Takes full viewport height */
-    position: relative; /* Needed for absolute positioning of children */
-    overflow: hidden; /* Prevents iframe overflow */
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Container for the Vimeo iframe */
 .vimeo-background-container {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1; /* Behind the overlay */
-    pointer-events: none; /* Allows clicks to pass through to elements behind (if any) */
+    z-index: 1;
+    pointer-events: none;
 }
 
-/* The div wrapper Vimeo provides */
 .vimeo-background-container > div {
     width: 100%;
     height: 100%;
-    padding: 0 !important; /* Override Vimeo's padding */
+    padding: 0 !important;
 }
 
-/* The iframe itself - Scaling logic */
 .vimeo-background-container iframe {
-    /* --- Key styles for full cover --- */
-    width: 100vw; /* Takes full viewport width */
-    height: 56.25vw; /* Calculates height based on a 16:9 aspect ratio */
-    min-height: 100vh; /* Ensures height fills viewport even if width is narrow */
-    min-width: 177.77vh; /* Ensures width fills viewport even if height is tall (100vh * 16/9) */
+    width: 100vw;
+    height: 56.25vw;
+    min-height: 100vh;
+    min-width: 177.77vh;
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* Centers the (potentially oversized) iframe */
+    transform: translate(-50%, -50%);
 }
 
-/* Overlay content (logo) styles remain the same */
 .overlay-content {
     position: absolute;
     top: 0;
@@ -108,10 +101,9 @@ const modules = [Navigation, Pagination];
     align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 2; /* Ensures it's above the video */
+    z-index: 2;
 }
 
-/* SECTION 2: MENU STYLES (Unchanged) */
 .menu-section {
     background-color: #1a1a1a;
     padding: 80px 0;
