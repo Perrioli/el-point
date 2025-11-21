@@ -2,11 +2,10 @@
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-
+import { Navigation, Pagination } from 'swiper/modules';
 
 defineProps({
     productos: Array,
@@ -16,17 +15,20 @@ const modules = [Navigation, Pagination];
 </script>
 
 <template>
-
     <Head title="Bienvenido" />
     <PublicLayout>
         <section class="hero-section">
-            <div class="video-background-container">
-                <video autoplay loop muted playsinline class="video-background">
-                    <source src="/videos/bar-video.mp4" type="video/mp4">
-                </video>
-                <div class="overlay-content">
-                    <img src="/images/logo-el-point.png" alt="Logo El Point" style="max-width: 400px; height: auto;">
-                </div>
+            <div class="vimeo-background-container">
+                <iframe
+                    src="https://player.vimeo.com/video/1139108727?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1"
+                    frameborder="0"
+                    allow="autoplay; fullscreen; picture-in-picture;"
+                    title="bar-video">
+                </iframe>
+            </div>
+            
+            <div class="overlay-content">
+                <img src="/images/logo-el-point.png" alt="Logo El Point" style="max-width: 400px; height: auto;">
             </div>
         </section>
 
@@ -59,57 +61,68 @@ const modules = [Navigation, Pagination];
 .hero-section {
     height: 100vh;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
 }
 
-.video-background-container,
+.vimeo-background-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.vimeo-background-container > div {
+    width: 100%;
+    height: 100%;
+    padding: 0 !important;
+}
+
+.vimeo-background-container iframe {
+    width: 100vw;
+    height: 56.25vw;
+    min-height: 100vh;
+    min-width: 177.77vh;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .overlay-content {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-}
-
-.video-background {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.overlay-content {
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2;
 }
 
 .menu-section {
-    background-color: #0d0d0d;
+    background-color: #1a1a1a;
     padding: 80px 0;
 }
-
 .menu-section h2 {
     font-family: 'Rye', cursive;
 }
-
 .product-card {
     background-color: rgba(35, 35, 35, 0.8);
     backdrop-filter: blur(5px);
     transition: transform 0.3s ease;
 }
-
 .product-card:hover {
     transform: translateY(-10px);
 }
-
 :deep(.swiper-button-next),
 :deep(.swiper-button-prev) {
     color: #ffffff;
 }
-
 :deep(.swiper-pagination-bullet) {
     background: #fff;
     opacity: 0.5;
@@ -117,7 +130,6 @@ const modules = [Navigation, Pagination];
     height: 10px;
     transition: all 0.3s ease;
 }
-
 :deep(.swiper-pagination-bullet-active) {
     background: #00aaff;
     opacity: 1;

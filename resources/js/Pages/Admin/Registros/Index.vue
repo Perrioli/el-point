@@ -29,6 +29,7 @@ const formatDate = (dateString) => {
 </script>
 
 <template>
+
     <Head title="Registros de Caja" />
 
     <AuthenticatedLayout>
@@ -51,24 +52,31 @@ const formatDate = (dateString) => {
                         <tr>
                             <th># Caja</th>
                             <th>Fecha Apertura</th>
-                            <th>Abierta por</th>
                             <th>Fecha Cierre</th>
-                            <th>Cerrada por</th>
-                            <th>Total Vendido</th>
+                            <th>Efectivo</th>
+                            <th>Transferencia</th>
+                            <th>Total</th>
                             <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-if="registros.data.length === 0">
-                            <td colspan="7" class="text-center">No se encontraron registros.</td>
-                        </tr>
                         <tr v-for="registro in registros.data" :key="registro.id">
                             <td>{{ registro.id }}</td>
-                            <td>{{ formatDate(registro.fecha_apertura) }}</td>
-                            <td>{{ registro.opened_by ? registro.opened_by.nombre_completo : 'N/A' }}</td>
-                            <td>{{ formatDate(registro.fecha_cierre) }}</td>
-                            <td>{{ registro.closed_by ? registro.closed_by.nombre_completo : 'N/A' }}</td>
-                            <td>${{ parseFloat(registro.pedidos_sum_precio_total || 0).toFixed(2) }}</td>
+                            <td>{{ formatDate(registro.fecha_apertura) }}<br><small class="text-muted">{{
+                                    registro.opened_by?.nombre_completo }}</small></td>
+                            <td>{{ formatDate(registro.fecha_cierre) }}<br><small class="text-muted">{{
+                                    registro.closed_by?.nombre_completo }}</small></td>
+
+                            <td class="text-success font-weight-bold">
+                                ${{ parseFloat(registro.total_efectivo || 0).toFixed(2) }}
+                            </td>
+
+                            <td class="text-primary font-weight-bold">
+                                ${{ parseFloat(registro.total_transferencia || 0).toFixed(2) }}
+                            </td>
+
+                            <td>${{ parseFloat(registro.total_general || 0).toFixed(2) }}</td>
+
                             <td class="text-center">
                                 <Link :href="route('admin.registros.show', registro.id)" class="btn btn-sm btn-info">
                                 Ver Detalles
